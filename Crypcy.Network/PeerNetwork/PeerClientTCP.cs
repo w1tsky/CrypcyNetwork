@@ -21,7 +21,6 @@ namespace Crypcy.Network.PeerNetwork
         private Thread PeerClientThread;
 
 
-
         public delegate void PacketHandler(Packet peerPacket);
         public event PacketHandler PeerClientPacketReceived;
 
@@ -32,13 +31,12 @@ namespace Crypcy.Network.PeerNetwork
 
         private List<Thread> peerThreads = new List<Thread>();
         private List<TcpClient> tcpClients = new List<TcpClient>();
+       
 
         public PeerClientTCP(IPEndPoint localEndpoint)
         {
             LocalEndpoint = localEndpoint;
         }
-
-
 
         public void StartListen(TcpClient tcpClient)
         {
@@ -49,26 +47,27 @@ namespace Crypcy.Network.PeerNetwork
                 tcpClient.GetStream().BeginRead(BufferTCP, 0, BufferTCP.Length, ReceiveClientCallback, tcpClient);
 
             }));
-
-
+      
             PeerClientThread.IsBackground = true;
-
             PeerClientThread.Start();
-
             peerThreads.Add(PeerClientThread);
-
-            tcpClients.Add(tcpClient);
 
         }
 
         public void StopListen()
         {
             foreach (Thread thread in peerThreads)
-                foreach(TcpClient tcpClient in tcpClients)
-                {
-                    thread.Abort();
-                    tcpClient.Close();
+            {
+                foreach(TcpClient tcpClient in tcpClients) 
+                { 
+                    if (thread.IsAlive)
+                    {
+                        DisconnectedFromPeer?.Invoke(tcpClient);
+                        tcpClient.Close();
+                        thread.Join();
+                    }
                 }
+            }
 
         }
 
@@ -104,13 +103,14 @@ namespace Crypcy.Network.PeerNetwork
 
         private void ConnectCallback(IAsyncResult asyncResult)
         {
-            TcpClient tcpClient = (TcpClient)asyncResult.AsyncState;
+            TcpClient? tcpClient = asyncResult.AsyncState as TcpClient;
 
             try
             {
-                tcpClient.EndConnect(asyncResult);
-                ConnectedToPeer.Invoke(tcpClient);
+                tcpClient?.EndConnect(asyncResult);
                 StartListen(tcpClient);
+                tcpClients.Add(tcpClient);
+                ConnectedToPeer.Invoke(tcpClient);
 
                 Console.WriteLine($"Succecefully conneted to peer {tcpClient.Client.RemoteEndPoint}");
             }
@@ -123,40 +123,49 @@ namespace Crypcy.Network.PeerNetwork
 
         private void ReceiveClientCallback(IAsyncResult asyncResult)
         {
-            TcpClient tcpClient = (TcpClient)asyncResult.AsyncState;
 
-            PacketTCP = new Packet();
-
-            try
+            using (TcpClient? tcpClient = asyncResult.AsyncState as TcpClient)
             {
-                int receivedByteLength = ClientTCP.Client.EndReceive(asyncResult);
-                if (receivedByteLength <= 0)
+                PacketTCP = new Packet();
+
+                if (tcpClient == null || tcpClient.Client == null)
                 {
-                    DisconnectedFromPeer?.Invoke(tcpClient);
-
-                    tcpClient.Client.Close();
-
-                    Console.WriteLine($"Peer disconnected: {tcpClient.Client.RemoteEndPoint.ToString()}");
+                    // handle null TcpClient object
                     return;
                 }
 
-                byte[] receivedData = new byte[receivedByteLength];
-                Array.Copy(BufferTCP, receivedData, receivedByteLength);
+                try
+                {
+                    int receivedByteLength = tcpClient.Client.EndReceive(asyncResult);
+                    if (receivedByteLength <= 0)
+                    {
+                        Console.WriteLine($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()}");
 
-                PacketTCP.Reset(HandleReceviedData(receivedData));
+                        tcpClient?.Close();
+                        tcpClients.Remove(tcpClient);
+                        DisconnectedFromPeer?.Invoke(tcpClient);
 
-                tcpClient.Client.BeginReceive(BufferTCP, 0, BufferTCP.Length, SocketFlags.None, ReceiveClientCallback, tcpClient);
+                        return;
+                    }
+
+                    byte[] receivedData = new byte[receivedByteLength];
+                    Array.Copy(BufferTCP, receivedData, receivedByteLength);
+                    PacketTCP.Reset(HandleReceviedData(receivedData));
+                    tcpClient.Client.BeginReceive(BufferTCP, 0, BufferTCP.Length, SocketFlags.None, ReceiveClientCallback, tcpClient);
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error receiving TCP data: {_ex.Message}");
+                    Console.WriteLine($"Peer disconnected: {tcpClient?.Client.RemoteEndPoint.ToString()}");
+
+                    tcpClient?.Close();
+                    tcpClients.Remove(tcpClient);
+                    DisconnectedFromPeer?.Invoke(tcpClient);     
+                    
+                }
             }
-            catch (Exception _ex)
-            {
-                Console.WriteLine($"Error receiving TCP data: {_ex.Message}");
-
-                DisconnectedFromPeer?.Invoke(tcpClient);
-
-                tcpClient.Client.Close();
-
-                Console.WriteLine($"Peer disconnected: {tcpClient.Client.RemoteEndPoint.ToString()}");
-            }
+     
+           
         }
 
         private bool HandleReceviedData(byte[] receivedData)

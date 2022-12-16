@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Console", "Crypcy.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Network", "Crypcy.Network\Crypcy.Network.csproj", "{55C93CEB-69A3-4B58-B2D9-40D319DE8446}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.UI", "Crypcy.UI\Crypcy.UI.csproj", "{31D4E5A7-A7E3-46EA-B403-8C024F1BA820}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypcy.Desktop", "Crypcy.Desktop\Crypcy.Desktop.csproj", "{EED075B7-E2A2-4360-BB53-0A42FC26949B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

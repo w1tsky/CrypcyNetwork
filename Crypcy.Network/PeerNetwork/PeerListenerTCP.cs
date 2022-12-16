@@ -13,7 +13,7 @@ namespace Crypcy.Network.PeerNetwork
     {
         IPEndPoint LocalEndpoint;
 
-        TcpListener ListnerTCP;
+        private TcpListener ListnerTCP;
         private Packet PacketTCP;
         private byte[] BufferTCP;
 
@@ -23,6 +23,9 @@ namespace Crypcy.Network.PeerNetwork
         public delegate void PeersHandler(TcpClient tcpClient);
         public event PeersHandler PeerConnected;
         public event PeersHandler PeerDisconnected;
+
+
+        private List<TcpClient> tcpClients = new List<TcpClient>();
 
         public PeerListnerTCP(IPEndPoint localEndpoint)
         {
@@ -45,7 +48,14 @@ namespace Crypcy.Network.PeerNetwork
 
         public void StopListen()
         {
+            foreach(TcpClient tcpClient in tcpClients)
+            {
+                tcpClient.Close();
+                PeerDisconnected.Invoke(tcpClient);
+            }
+
             ListnerTCP.Stop();
+            ListnerTCP.Server.Dispose();
             Console.WriteLine($"Peer Listner Stopped");
         }
 
@@ -63,8 +73,10 @@ namespace Crypcy.Network.PeerNetwork
                 Console.WriteLine($"Peer connected with Endpoint: {tcpClient.Client.RemoteEndPoint.ToString()}");
 
                 PeerConnected.Invoke(tcpClient);
+                tcpClients.Add(tcpClient);
 
                 tcpClient.Client.BeginReceive(BufferTCP, 0, BufferTCP.Length, SocketFlags.None, ReceiveCallback, tcpClient);
+
 
             }
             catch (Exception ex)
@@ -77,36 +89,47 @@ namespace Crypcy.Network.PeerNetwork
 
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
-            PacketTCP = new Packet();
-
-            TcpClient tcpClient = (TcpClient)asyncResult.AsyncState;
-
-            try
+          
+            using(TcpClient? tcpClient = asyncResult.AsyncState as TcpClient)
             {
-                int receivedByteLength = tcpClient.Client.EndReceive(asyncResult);
-                if (receivedByteLength <= 0)
+                PacketTCP = new Packet();
+
+                try
                 {
-                    // TODO: disconnect
+                    if (tcpClient == null || tcpClient.Client == null)
+                    {
+                        // handle null TcpClient object
+                        return;
+                    }
+
+                    int receivedByteLength = tcpClient.Client.EndReceive(asyncResult);
+                    if (receivedByteLength <= 0)
+                    {
+                        tcpClient.Close();
+                        tcpClients.Remove(tcpClient);
+                        PeerDisconnected.Invoke(tcpClient);
+
+                        return;
+                    }
+
+                    byte[] receivedData = new byte[receivedByteLength];
+                    Array.Copy(BufferTCP, receivedData, receivedByteLength);
+
+
+                    PacketTCP.Reset(HandleReceviedData(receivedData));
+
+                    tcpClient.Client.BeginReceive(BufferTCP, 0, BufferTCP.Length, SocketFlags.None, ReceiveCallback, tcpClient);
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error receiving TCP data: {_ex}");
+                    Console.WriteLine($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()}");
+
                     tcpClient.Close();
+                    tcpClients.Remove(tcpClient);
                     PeerDisconnected.Invoke(tcpClient);
 
-                    return;
                 }
-
-                byte[] receivedData = new byte[receivedByteLength];
-                Array.Copy(BufferTCP, receivedData, receivedByteLength);
-
-
-                PacketTCP.Reset(HandleReceviedData(receivedData));
-
-                tcpClient.Client.BeginReceive(BufferTCP, 0, BufferTCP.Length, SocketFlags.None, ReceiveCallback, tcpClient);
-            }
-            catch (Exception _ex)
-            {
-                Console.WriteLine($"Error receiving TCP data: {_ex}");
-
-                tcpClient.Close();
-                PeerDisconnected.Invoke(tcpClient);
             }
         }
 

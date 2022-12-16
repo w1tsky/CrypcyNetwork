@@ -56,28 +56,35 @@ namespace Crypcy.Network.PeerNetwork
         {
             PeerListner.StartListen();
 
-            PeerListner.PeerListenerPacketReceived += ReceivePacket;
+            // Handler PeerListener Connections
             PeerListner.PeerConnected += PeerConnected;
             PeerListner.PeerDisconnected += PeerDisconnected;
 
-            PeerClient.PeerClientPacketReceived += ReceivePacket;
+
+            // Handle PeerClient Connections
             PeerClient.ConnectedToPeer += PeerConnected;
             PeerClient.DisconnectedFromPeer += PeerDisconnected;
+
+            // Handle Peer Packaets
+            PeerListner.PeerListenerPacketReceived += ReceivePacket;
+            PeerClient.PeerClientPacketReceived += ReceivePacket;
 
             peerStarted = true;
         }
 
         public void StopPeer()
         {
-            PeerListner.StopListen();
-            PeerClient.StopListen();
-            
+
             foreach(var peer in PeersConnected)
             {
                 peer.Close();
             }
 
             PeersConnected.Clear(); 
+
+            PeerListner.StopListen();
+            PeerClient.StopListen();
+                  
 
             peerStarted = false;
         }
@@ -93,20 +100,16 @@ namespace Crypcy.Network.PeerNetwork
 
             var tcpClient = PeersConnected.Find(c => c.Client.RemoteEndPoint == remoteEndpoint);
 
-
-
             try
             {
-                //if (tcpClient.Client != null && tcpClient.Client.Connected)
-                //{
-                //tcpClient.GetStream().Write(_packet.ToArray(), 0, _packet.Length());
-                //}
 
                 if (OnResultsUpdate != null)
                     OnResultsUpdate.Invoke(this, $"Sending message to Peer - {tcpClient.Client.RemoteEndPoint.ToString()} - ");
 
-
-                tcpClient.GetStream().BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                if (tcpClient.Client != null && tcpClient.Client.Connected)
+                {
+                    tcpClient.GetStream().BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                }
 
             }
             catch (Exception _ex)

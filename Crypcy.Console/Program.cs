@@ -12,7 +12,7 @@ Console.WriteLine("4: Send message to Peer");
 Console.WriteLine("5: Stop Peer");
 
 
-Peer LocalPeer = null;
+OldPeer LocalPeer = null;
 
 
 e: Console.WriteLine("Type 'exit' to shutdown the server");
@@ -27,7 +27,7 @@ switch (Console.ReadLine())
 
         int localPort = int.Parse(Console.ReadLine());
 
-        LocalPeer = new Peer(new IPEndPoint(IPAddress.Any, localPort));
+        LocalPeer = new OldPeer(new IPEndPoint(IPAddress.Any, localPort));
         LocalPeer.StartPeer();
         LocalPeer.PeerPacketReceived += DisplayRecievedMessage;
 

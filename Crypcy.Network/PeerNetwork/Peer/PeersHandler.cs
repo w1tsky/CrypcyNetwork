@@ -10,28 +10,9 @@ using System.Threading.Tasks;
 
 namespace Crypcy.Network.PeerNetwork.Peer
 {
-    public class PeersHandler : IPeersHandler
+    public class PeersHandler
     {
-    
-        public List<TcpClient> PeersConnected { get; set; }
-
-        public PeersHandler()
-        {
-            PeersConnected = new List<TcpClient>();
-
-        }
-
-        public void PeerConnected(TcpClient tcpClient)
-        {
-            PeersConnected.Add(tcpClient);
-        }
-
-        public void PeerDisconnected(TcpClient tcpClient)
-        {
-            PeersConnected.Remove(tcpClient);
-        }
-
-
+        // To implement
     }
 
 

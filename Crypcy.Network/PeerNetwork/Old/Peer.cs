@@ -74,6 +74,12 @@ namespace Crypcy.Network.PeerNetwork.Old
 
         public void StopPeer()
         {
+
+            foreach (var peer in PeersConnected)
+            {
+                peer.Close();
+            }
+
             PeersConnected.Clear();
 
             PeerListner.StopListen();

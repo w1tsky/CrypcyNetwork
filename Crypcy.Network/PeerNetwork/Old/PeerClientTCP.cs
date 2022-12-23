@@ -18,18 +18,15 @@ namespace Crypcy.Network.PeerNetwork.Old
         private Packet PacketTCP;
         private byte[] BufferTCP;
 
-        private Thread PeerClientThread;
-
 
         public delegate void PacketHandler(Packet peerPacket);
         public event PacketHandler PeerClientPacketReceived;
 
-        public delegate void PeerHandler(TcpClient tcpClient);
+        public delegate void PeertHandler(TcpClient tcpClient);
 
-        public event PeerHandler ConnectedToPeer;
-        public event PeerHandler DisconnectedFromPeer;
+        public event PeertHandler ConnectedToPeer;
+        public event PeertHandler DisconnectedFromPeer;
 
-        private List<Thread> peerThreads = new List<Thread>();
         private List<TcpClient> tcpClients = new List<TcpClient>();
 
 
@@ -40,33 +37,16 @@ namespace Crypcy.Network.PeerNetwork.Old
 
         public void StartListen(TcpClient tcpClient)
         {
-
-            PeerClientThread = new Thread(new ThreadStart(delegate
-            {
-                BufferTCP = new byte[4096];
-                tcpClient.GetStream().BeginRead(BufferTCP, 0, BufferTCP.Length, ReceiveClientCallback, tcpClient);
-
-            }));
-
-            PeerClientThread.IsBackground = true;
-            PeerClientThread.Start();
-            peerThreads.Add(PeerClientThread);
-
+            BufferTCP = new byte[4096];
+            tcpClient.GetStream().BeginRead(BufferTCP, 0, BufferTCP.Length, ReceiveClientCallback, tcpClient);
         }
 
         public void StopListen()
         {
-            foreach (Thread thread in peerThreads)
+            foreach (TcpClient tcpClient in tcpClients)
             {
-                foreach (TcpClient tcpClient in tcpClients)
-                {
-                    if (thread.IsAlive)
-                    {
-                        DisconnectedFromPeer?.Invoke(tcpClient);
-                        tcpClient.Close();
-                        thread.Join();
-                    }
-                }
+                tcpClient.Close();
+
             }
 
         }

@@ -10,9 +10,7 @@ namespace Crypcy.Network.PeerNetwork.Interfaces.PeerTcp
 {
     public interface IPeerTcpClientConnections
     {
-        public Thread TcpConnectionThreads { get; set; } 
-        public List<Thread> TcpConnectionsThreads { get; set; }
-
-        public List<TcpClient> tcpClients { get; set; }
+        // To implement
     }
 }
+

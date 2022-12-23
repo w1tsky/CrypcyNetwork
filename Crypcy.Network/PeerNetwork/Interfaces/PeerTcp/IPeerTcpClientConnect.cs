@@ -10,11 +10,7 @@ namespace Crypcy.Network.PeerNetwork.Interfaces.PeerTcp
 {
     public interface IPeerTcpClientConnect
     {
-
-        public delegate void PeerHandler(TcpClient tcpClient);
-
-        public event PeerHandler ConnectedToPeer { add { } remove { } }
-        public void TcpConnect(IPEndPoint connectEndpoint);
-        public void TcpConnectHandle(IAsyncResult asyncResult);
+        // To implement
     }
 }
+

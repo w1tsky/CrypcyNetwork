@@ -8,5 +8,6 @@ namespace Crypcy.Network.PeerNetwork.Peer
 {
     public class PeerDiscovery
     {
+        // To implement
     }
 }

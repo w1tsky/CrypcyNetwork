@@ -11,8 +11,7 @@ namespace Crypcy.Network.PeerNetwork.Interfaces.PeerTcp
 {
     public interface IPeerTcpListnerHandler
     {
-        public void TcpIncomingConnectionHandle(IAsyncResult asyncResult);
-        public void TcpDisconnectionHandle(IAsyncResult asyncResult);
+        // To implement
     }
 
 }

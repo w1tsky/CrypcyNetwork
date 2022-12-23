@@ -11,31 +11,51 @@ using Crypcy.Network.PeerNetwork.Peer;
 
 namespace Crypcy.Network.PeerNetwork.PeerTcp
 {
-    public class PeerTcpClient : IPeerTcpClient
+    public class PeerTcpClient
     {
+        
+        
+        byte[] TcpBuffer;
+        public TcpClient TcpClient { get; set; }
+        public List<TcpClient> TcpClients= new List<TcpClient>();
 
-        public IPEndPoint LocalEndpoint { get; set; }
-        public TcpClient ClientTCP { get; set; }
-        public byte[] BufferTCP { get; set; }
+        public PeerTcpClientConnections TcpClientConnections;
 
-       
         public event EventHandler<string> OnResultsUpdate;
 
-        PeerPacketHandler PeerPacketHandler { get; set; }
-        public delegate void PeertHandler(TcpClient tcpClient);
+        public delegate void TcpPacketHandler(Packet packet);
+        public event TcpPacketHandler TcpPacketReceived;
 
-        public List<Thread> TcpConnectionsThreads { get; set; }
-
-        public Thread TcpConnectionThread { get; set; }
-
-        public void HandleTcpConnection(TcpClient tcpClient)
+        public PeerTcpClient(IPEndPoint localEndPoint, int tcpBufferLenght)
         {
-            
+            TcpBuffer = new byte[tcpBufferLenght];
+            TcpClient = new TcpClient();
+
+            TcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            TcpClient.Client.ExclusiveAddressUse = false;
+            TcpClient.Client.Bind(localEndPoint);
+
+            TcpClient.SendBufferSize = TcpBuffer.Length;
+            TcpClient.ReceiveBufferSize = TcpBuffer.Length;
+
+            TcpClientConnections = new PeerTcpClientConnections(TcpBuffer, TcpClient);
+
+            TcpClientConnections.TcpReceiveHandler.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
+            TcpClientConnections.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
+
+            TcpClientConnections.TcpConnected += (tcpClient) => TcpClients.Add(tcpClient);
+            TcpClientConnections.TcpDisconnected += (tcpClient) => TcpClients.Remove(tcpClient);
         }
 
-        public void StopHandleTcpConnection()
+        public void TcpCloseConnections()
         {
-           
+            foreach(TcpClient tcpClient in TcpClients)
+            {
+                tcpClient.Client.Shutdown(SocketShutdown.Both);
+                tcpClient.Close();  
+            }
         }
+
+
     }
 }

@@ -2,21 +2,77 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Crypcy.Network.PeerItems;
+using System.Net.Http;
 
 namespace Crypcy.Network.PeerNetwork.PeerTcp
 {
-    public class PeerTcpListnerConnections : IPeerTcpListnerHandler
+    public class PeerTcpListnerConnections
     {
-        public void TcpIncomingConnectionHandle(IAsyncResult asyncResult)
+
+        private TcpListener TcpListener;
+
+        private byte[] TcpListenerBuffer;
+        public PeerTcpReceiveHandler TcpReceiveHandler { get; set; }
+
+        public delegate void TcpConnectionHandler(TcpClient tcpClient);
+        public event TcpConnectionHandler TcpConnected;
+        public event TcpConnectionHandler TcpDisconnected;
+
+        public delegate void TcpPacketHandler(Packet packet);
+        public event TcpPacketHandler TcpPacketReceived;
+
+        public event EventHandler<string> OnResultsUpdate;
+
+
+        public PeerTcpListnerConnections(TcpListener tcpListener, int tcpBufferLenght)
         {
-            throw new NotImplementedException();
+            TcpListener = tcpListener;
+            TcpListenerBuffer = new byte[tcpBufferLenght];
+
+            TcpReceiveHandler = new PeerTcpReceiveHandler(TcpListenerBuffer);
+
+            TcpReceiveHandler.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
+            TcpReceiveHandler.TcpDisconnected += (tcpClient) => TcpDisconnected?.Invoke(tcpClient);
         }
 
-        public void TcpDisconnectionHandle(IAsyncResult asyncResult)
+        public void TcpListen(TcpListener tcpListener)
         {
-            throw new NotImplementedException();
+            tcpListener.BeginAcceptTcpClient(new AsyncCallback(TcpConnectionsHandle), TcpListener);
+            OnResultsUpdate?.Invoke(this, $"Peer Listner receving incomming connection on address: {tcpListener.Server.LocalEndPoint.ToString}");
         }
+
+
+
+        public void TcpConnectionsHandle(IAsyncResult asyncResult)
+        {
+            TcpClient tcpClient = TcpListener.EndAcceptTcpClient(asyncResult);
+
+            tcpClient.ReceiveBufferSize = TcpListener.Server.ReceiveBufferSize;
+            tcpClient.SendBufferSize = TcpListener.Server.SendBufferSize;
+
+            try
+            {
+
+                TcpConnected.Invoke(tcpClient);
+
+                tcpClient.Client.BeginReceive(TcpListenerBuffer, 0, TcpListenerBuffer.Length, SocketFlags.None, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
+
+                OnResultsUpdate?.Invoke(this, $"Peer connected with Endpoint: {tcpClient.Client.RemoteEndPoint.ToString}");
+
+
+            }
+            catch (Exception ex)
+            {
+                OnResultsUpdate?.Invoke(this, $"Unnable to listen icomming connection {tcpClient.Client.RemoteEndPoint}: {ex.Message}");
+            }
+
+        }
+
+
     }
 }

@@ -9,7 +9,6 @@ namespace Crypcy.Network.PeerNetwork.Interfaces.PeerTcp
 {
     public interface IPeerTcpReceiveHandler
     {
-        public void ReceiveHandler(IAsyncResult asyncResult);
-        public bool ReceivedDataHandler(byte[] receivedData);
+        // To implement
     }
 }

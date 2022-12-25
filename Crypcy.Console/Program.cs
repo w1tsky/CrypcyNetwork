@@ -1,7 +1,9 @@
 ﻿using Crypcy.Network.PeerItems;
-using Crypcy.Network.PeerNetwork;
+using Crypcy.Network.PeerNetwork.Old;
+using Crypcy.Network.PeerNetwork.Peer;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 
 Console.WriteLine("Command list");
@@ -12,7 +14,7 @@ Console.WriteLine("4: Send message to Peer");
 Console.WriteLine("5: Stop Peer");
 
 
-Peer LocalPeer = null;
+NewPeer LocalPeer = null;
 
 
 e: Console.WriteLine("Type 'exit' to shutdown the server");
@@ -27,9 +29,10 @@ switch (Console.ReadLine())
 
         int localPort = int.Parse(Console.ReadLine());
 
-        LocalPeer = new Peer(new IPEndPoint(IPAddress.Any, localPort));
-        LocalPeer.StartPeer();
+        LocalPeer = new NewPeer(new IPEndPoint(IPAddress.Any, localPort));
         LocalPeer.PeerPacketReceived += DisplayRecievedMessage;
+        LocalPeer.OnResultsUpdate += (sender, result) => Console.WriteLine(result);
+        LocalPeer.StartPeer();
 
         goto e;
     case "2":
@@ -81,7 +84,7 @@ switch (Console.ReadLine())
             Packet packet = new Packet();
             packet.Write(message);
 
-            LocalPeer.SendPacketToPeer(remoteEndpoint, packet);
+            LocalPeer.SendTcpPacketToPeer(remoteEndpoint, packet);
 
         }
         catch (Exception ex)
@@ -90,7 +93,6 @@ switch (Console.ReadLine())
         }
         goto e;
     case "5":
-        Console.WriteLine("Stopping peer....");
         if (LocalPeer != null)
         {
             LocalPeer.StopPeer();

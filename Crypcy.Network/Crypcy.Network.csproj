@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="PeerNetwork\Interfaces\PeerUdp\" />
+    <Folder Include="PeerNetwork\PeerUdp\" />
+  </ItemGroup>
+
 </Project>

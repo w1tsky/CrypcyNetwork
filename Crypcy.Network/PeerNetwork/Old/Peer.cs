@@ -7,9 +7,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crypcy.Network.PeerNetwork
+namespace Crypcy.Network.PeerNetwork.Old
 {
-    public class Peer
+    public class OldPeer
     {
         public IPEndPoint LocalEndpoint;
 
@@ -27,10 +27,10 @@ namespace Crypcy.Network.PeerNetwork
         private bool peerStarted;
         public bool PeerStarted
         {
-            get { return peerStarted; } 
+            get { return peerStarted; }
         }
 
-        public Peer(IPEndPoint localPeerEndpoint)
+        public OldPeer(IPEndPoint localPeerEndpoint)
         {
             LocalEndpoint = localPeerEndpoint;
             PeerClient = new PeerClientTCP(LocalEndpoint);
@@ -75,16 +75,16 @@ namespace Crypcy.Network.PeerNetwork
         public void StopPeer()
         {
 
-            foreach(var peer in PeersConnected)
+            foreach (var peer in PeersConnected)
             {
                 peer.Close();
             }
 
-            PeersConnected.Clear(); 
+            PeersConnected.Clear();
 
             PeerListner.StopListen();
             PeerClient.StopListen();
-                  
+
 
             peerStarted = false;
         }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Crypcy.Network.PeerItems;
 
-namespace Crypcy.Network.PeerNetwork
+namespace Crypcy.Network.PeerNetwork.Old
 {
     public class PeerListnerTCP
     {
@@ -48,7 +48,7 @@ namespace Crypcy.Network.PeerNetwork
 
         public void StopListen()
         {
-            foreach(TcpClient tcpClient in tcpClients)
+            foreach (TcpClient tcpClient in tcpClients)
             {
                 tcpClient.Close();
                 PeerDisconnected.Invoke(tcpClient);
@@ -89,8 +89,8 @@ namespace Crypcy.Network.PeerNetwork
 
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
-          
-            using(TcpClient? tcpClient = asyncResult.AsyncState as TcpClient)
+
+            using (TcpClient? tcpClient = asyncResult.AsyncState as TcpClient)
             {
                 PacketTCP = new Packet();
 

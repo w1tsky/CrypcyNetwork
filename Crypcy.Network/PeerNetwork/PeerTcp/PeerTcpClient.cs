@@ -14,8 +14,6 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
     public class PeerTcpClient
     {
         
-        
-        byte[] TcpBuffer;
         public TcpClient TcpClient { get; set; }
         public List<TcpClient> TcpClients= new List<TcpClient>();
 
@@ -28,19 +26,18 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
         public PeerTcpClient(IPEndPoint localEndPoint, int tcpBufferLenght)
         {
-            TcpBuffer = new byte[tcpBufferLenght];
             TcpClient = new TcpClient();
 
             TcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             TcpClient.Client.ExclusiveAddressUse = false;
             TcpClient.Client.Bind(localEndPoint);
 
-            TcpClient.SendBufferSize = TcpBuffer.Length;
-            TcpClient.ReceiveBufferSize = TcpBuffer.Length;
+            TcpClient.SendBufferSize = tcpBufferLenght;
+            TcpClient.ReceiveBufferSize = tcpBufferLenght;
 
-            TcpClientConnections = new PeerTcpClientConnections(TcpBuffer, TcpClient);
+            TcpClientConnections = new PeerTcpClientConnections(TcpClient, tcpBufferLenght);
 
-            TcpClientConnections.TcpReceiveHandler.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
+            TcpClientConnections.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
             TcpClientConnections.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
 
             TcpClientConnections.TcpConnected += (tcpClient) => TcpClients.Add(tcpClient);

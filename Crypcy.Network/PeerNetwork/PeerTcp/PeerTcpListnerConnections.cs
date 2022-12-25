@@ -42,29 +42,25 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
         public void TcpListen(TcpListener tcpListener)
         {
-            tcpListener.BeginAcceptTcpClient(new AsyncCallback(TcpConnectionsHandle), TcpListener);
-            OnResultsUpdate?.Invoke(this, $"Peer Listner receving incomming connection on address: {tcpListener.Server.LocalEndPoint.ToString}");
+            tcpListener.BeginAcceptTcpClient(TcpConnectionsHandle, TcpListener);
         }
 
 
 
         public void TcpConnectionsHandle(IAsyncResult asyncResult)
         {
-            TcpClient tcpClient = TcpListener.EndAcceptTcpClient(asyncResult);
+    
+            TcpClient? tcpClient = TcpListener.EndAcceptTcpClient(asyncResult);
 
             tcpClient.ReceiveBufferSize = TcpListener.Server.ReceiveBufferSize;
             tcpClient.SendBufferSize = TcpListener.Server.SendBufferSize;
 
+            TcpConnected?.Invoke(tcpClient);
+            OnResultsUpdate?.Invoke(this, $"Peer connected with Endpoint: {tcpClient.Client.RemoteEndPoint}");
+
             try
             {
-
-                TcpConnected.Invoke(tcpClient);
-
                 tcpClient.Client.BeginReceive(TcpListenerBuffer, 0, TcpListenerBuffer.Length, SocketFlags.None, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
-
-                OnResultsUpdate?.Invoke(this, $"Peer connected with Endpoint: {tcpClient.Client.RemoteEndPoint.ToString}");
-
-
             }
             catch (Exception ex)
             {

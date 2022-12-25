@@ -14,6 +14,7 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
     {
 
         public TcpListener TcpListener { get; set; }
+
         public List<TcpClient> TcpConnectedClients = new List<TcpClient>();
 
         public event EventHandler<string> OnResultsUpdate;
@@ -21,29 +22,33 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
         public delegate void TcpPacketHandler(Packet packet);
         public event TcpPacketHandler TcpPacketReceived;
 
-        public PeerTcpListnerConnections TcpListnerConnections;
+        public PeerTcpListnerConnections TcpListenerConnections;
 
         public PeerTcpListener(IPEndPoint localEndPoint, int tcpBufferLenght)
         {
             TcpListener = new TcpListener(localEndPoint);
+
             TcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             TcpListener.Server.ExclusiveAddressUse = false;
 
             TcpListener.Server.ReceiveBufferSize = tcpBufferLenght;
             TcpListener.Server.SendBufferSize = tcpBufferLenght;
 
-            TcpListnerConnections = new PeerTcpListnerConnections(TcpListener, tcpBufferLenght);
-            TcpListnerConnections.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
+            TcpListenerConnections = new PeerTcpListnerConnections(TcpListener, tcpBufferLenght);
 
-            TcpListnerConnections.TcpConnected += (tcpClient) => TcpConnectedClients.Add(tcpClient);
-            TcpListnerConnections.TcpDisconnected += (tcpClient) => TcpConnectedClients.Remove(tcpClient);
+            TcpListenerConnections.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
+            TcpListenerConnections.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
+
+            TcpListenerConnections.TcpConnected += (tcpClient) => TcpConnectedClients.Add(tcpClient);
+            TcpListenerConnections.TcpDisconnected += (tcpClient) => TcpConnectedClients.Remove(tcpClient);
+
         }
 
         public void TcpStartListen()
         {
             TcpListener.Start();
-            TcpListnerConnections.TcpListen(TcpListener);
-
+            TcpListenerConnections.TcpListen(TcpListener);
+            OnResultsUpdate?.Invoke(this, $"Peer Listner started: {TcpListener.Server.LocalEndPoint}");
         }
 
         public void TcpStopListen()
@@ -54,7 +59,11 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
                 tcpClient.Close();
             }
 
-            TcpListener.Server.Shutdown(SocketShutdown.Both);
+            if (TcpListener.Server.Connected)
+            {
+               TcpListener.Server.Shutdown(SocketShutdown.Both);
+            }
+            
             TcpListener.Stop();
         }
 

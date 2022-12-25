@@ -30,9 +30,9 @@ switch (Console.ReadLine())
         int localPort = int.Parse(Console.ReadLine());
 
         LocalPeer = new NewPeer(new IPEndPoint(IPAddress.Any, localPort));
-        LocalPeer.StartPeer();
         LocalPeer.PeerPacketReceived += DisplayRecievedMessage;
         LocalPeer.OnResultsUpdate += (sender, result) => Console.WriteLine(result);
+        LocalPeer.StartPeer();
 
         goto e;
     case "2":
@@ -93,7 +93,6 @@ switch (Console.ReadLine())
         }
         goto e;
     case "5":
-        Console.WriteLine("Stopping peer....");
         if (LocalPeer != null)
         {
             LocalPeer.StopPeer();

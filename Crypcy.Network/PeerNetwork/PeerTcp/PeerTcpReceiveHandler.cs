@@ -29,38 +29,37 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
         public void TcpReceiveHandler(IAsyncResult asyncResult)
         {
+            TcpClient? tcpClient = asyncResult.AsyncState as TcpClient;
 
-            using (TcpClient? tcpClient = asyncResult.AsyncState as TcpClient)
+            Packet tcpPacket = new Packet();
+
+            try
             {
-                Packet tcpPacket = new Packet();
-
-                try
+                int receivedByteLength = tcpClient.Client.EndReceive(asyncResult);
+                if (receivedByteLength <= 0)
                 {
-                    int receivedByteLength = tcpClient.Client.EndReceive(asyncResult);
-                    if (receivedByteLength <= 0)
-                    {
-                        OnResultsUpdate.Invoke(this, ($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()} - No bytes received"));
-                        TcpDisconnected?.Invoke(tcpClient);
-                        tcpClient.Close();
-
-                        return;
-                    }
-
-                    byte[] receivedData = new byte[receivedByteLength];
-                    Array.Copy(TcpBuffer, receivedData, receivedByteLength);
-                    tcpPacket.Reset(ReceivedDataHandler(tcpPacket, receivedData));
-                    tcpClient.Client.BeginReceive(TcpBuffer, 0, TcpBuffer.Length, SocketFlags.None, TcpReceiveHandler, tcpClient);
-                }
-                catch (Exception _ex)
-                {
-                    OnResultsUpdate?.Invoke(this, ($"Error receiving TCP data: {_ex.Message}"));
-                    OnResultsUpdate?.Invoke(this, ($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()}"));
-
+                    OnResultsUpdate.Invoke(this, ($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()} - No bytes received"));
                     TcpDisconnected?.Invoke(tcpClient);
+                    tcpClient.Close();
 
-                    tcpClient?.Close();
-
+                    return;
                 }
+
+                byte[] receivedData = new byte[receivedByteLength];
+                Array.Copy(TcpBuffer, receivedData, receivedByteLength);
+                tcpPacket.Reset(ReceivedDataHandler(tcpPacket, receivedData));
+                tcpClient.Client.BeginReceive(TcpBuffer, 0, TcpBuffer.Length, SocketFlags.None, TcpReceiveHandler, tcpClient);
+            }
+            catch (Exception _ex)
+            {
+                OnResultsUpdate?.Invoke(this, ($"Error receiving TCP data: {_ex.Message}"));
+                OnResultsUpdate?.Invoke(this, ($"Peer disconnected: {tcpClient?.Client?.RemoteEndPoint?.ToString()}"));
+
+                TcpDisconnected?.Invoke(tcpClient);
+
+                tcpClient?.Close();
+
+
             }
         }
 
@@ -85,7 +84,7 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
                 using (Packet _packet = new Packet(_packetBytes))
                 {
-                    OnResultsUpdate?.Invoke(this, ($"PeerListnener - Packet received: {_packet.ToString()}"));
+                    OnResultsUpdate?.Invoke(this, ($"Packet received: {_packet.ToString()}"));
                     TcpPacketReceived?.Invoke(_packet);
                 }
 

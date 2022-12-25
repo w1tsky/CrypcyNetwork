@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,8 +40,8 @@ namespace Crypcy.Network.PeerNetwork.Peer
 
             PeerTcpListener.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
             PeerTcpListener.TcpPacketReceived += (packet) => PeerPacketReceived?.Invoke(packet);
-            PeerTcpListener.TcpListnerConnections.TcpDisconnected += (tcpClient) => PeersConnected.Add(tcpClient);
-            PeerTcpListener.TcpListnerConnections.TcpDisconnected += (tcpClient) => PeersConnected.Remove(tcpClient);
+            PeerTcpListener.TcpListenerConnections.TcpConnected += (tcpClient) => PeersConnected.Add(tcpClient);
+            PeerTcpListener.TcpListenerConnections.TcpDisconnected += (tcpClient) => PeersConnected.Remove(tcpClient);
 
 
             PeerTcpClient.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
@@ -60,6 +61,7 @@ namespace Crypcy.Network.PeerNetwork.Peer
 
         public void StopPeer()
         {
+            OnResultsUpdate?.Invoke(this, "Stopping peer....");
             PeerTcpClient.TcpCloseConnections();
             PeerTcpListener.TcpStopListen();
         }

@@ -9,17 +9,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Network", "Crypcy.Ne
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{15578C7A-ABD0-4D33-A167-BEB43E7E0BAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypcy.NodeConsole", "src\Crypcy.NodeConsole\Crypcy.NodeConsole.csproj", "{D45E899D-3E55-40F9-AE30-D129618A8B96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.NodeConsole", "src\Crypcy.NodeConsole\Crypcy.NodeConsole.csproj", "{D45E899D-3E55-40F9-AE30-D129618A8B96}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationCore", "ApplicationCore", "{F2347B4B-8727-4243-A8EC-5F6FC9ECD045}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypcy.ApplicationCore.Contracts", "src\Crypcy.ApplicationCore.Contracts\Crypcy.ApplicationCore.Contracts.csproj", "{5A3E3ED5-B958-4F48-A4AD-CDDACA906365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.ApplicationCore.Contracts", "src\Crypcy.ApplicationCore.Contracts\Crypcy.ApplicationCore.Contracts.csproj", "{5A3E3ED5-B958-4F48-A4AD-CDDACA906365}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypcy.ApplicationCore", "src\Crypcy.ApplicationCore\Crypcy.ApplicationCore.csproj", "{EDC35FDE-4FB3-4819-80F6-C2E0D15A1D05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.ApplicationCore", "src\Crypcy.ApplicationCore\Crypcy.ApplicationCore.csproj", "{EDC35FDE-4FB3-4819-80F6-C2E0D15A1D05}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Communication", "Communication", "{56D0BB5D-39BE-4D7E-BF8C-FAEB8BB8378D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypcy.Communication.Network", "src\Crypcy.Communication.Network\Crypcy.Communication.Network.csproj", "{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Communication.Network", "src\Crypcy.Communication.Network\Crypcy.Communication.Network.csproj", "{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82FE8920-F699-41A4-BEFF-B7973DFCCB3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.NodeUI", "src\Crypcy.NodeUI\Crypcy.NodeUI.csproj", "{E9302D4D-FF3A-4010-96B0-849293C074CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,12 @@ Global
 		{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9302D4D-FF3A-4010-96B0-849293C074CD}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +72,7 @@ Global
 		{EDC35FDE-4FB3-4819-80F6-C2E0D15A1D05} = {F2347B4B-8727-4243-A8EC-5F6FC9ECD045}
 		{56D0BB5D-39BE-4D7E-BF8C-FAEB8BB8378D} = {15578C7A-ABD0-4D33-A167-BEB43E7E0BAC}
 		{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E} = {56D0BB5D-39BE-4D7E-BF8C-FAEB8BB8378D}
+		{E9302D4D-FF3A-4010-96B0-849293C074CD} = {15578C7A-ABD0-4D33-A167-BEB43E7E0BAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {383C5D03-8519-42E7-86EA-451918368E0E}

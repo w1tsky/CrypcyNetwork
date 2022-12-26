@@ -8,6 +8,7 @@ namespace Crypcy.NodeConsole
         static void Main(string[] args)
         {
             Console.WriteLine("Short manual:");
+            Console.WriteLine("Type \"start:PORT\" to start node with port(1024 to 49151).");
             Console.WriteLine("Type \"l\" to show list of nodes.");
             Console.WriteLine("For sending message you must write message in specific format:");
             Console.WriteLine("Template: Nmsg:your message");
@@ -16,12 +17,12 @@ namespace Crypcy.NodeConsole
 
             // DI:
             var console = new ConsoleImp();
-            var network = new Network();
+            var network = new TcpNetwork();
             var nodes = new Nodes(network, console);
             // end DI
 
-            network.Start();
-            Console.WriteLine("Server working...");
+            //network.Start();
+            Console.WriteLine("Node working...");
 
             while (true)
             {

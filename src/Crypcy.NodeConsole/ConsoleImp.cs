@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,7 +18,12 @@ namespace Crypcy.NodeConsole
         
         public event Action<string, string>? OnSendMessageRequest;
 
-        public void NewNodeConnectedNotification(string node)
+        public void StartNode(int port)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NodeConnectedNotification(string node)
         {
             var index = (++_indexCounter).ToString();
             _nodes[index] = node;
@@ -49,18 +56,25 @@ namespace Crypcy.NodeConsole
 
         internal void NewInput(string input) 
         {
-            var r = new Regex(@"(\d+)msg:(.+)$");
+            var regMessage = new Regex(@"(\d+)msg:(.+)$");
+            var regStart = new Regex(@"start:\b(1024|1[0-9]{3}|2[0-4][0-9]{2}|49[0-1][0-9]{2}|49150)\b");
             switch (input)
             {
                 case "l":
                 case "L":
                     ShowConnectedNodes();
                     break;
-                case var value when r.IsMatch(value):             
-                    var values = r.Matches(input)[0].Groups;
-                    OnSendMessageRequest?.Invoke(_nodes[values[1].Value], values[2].Value);
+                case var msg when regMessage.IsMatch(msg):             
+                    var msgValues = regMessage.Matches(input)[0].Groups;
+                    OnSendMessageRequest?.Invoke(_nodes[msgValues[1].Value], msgValues[2].Value);
+                    break;
+                case var strt when regStart.IsMatch(strt):
+                    var strtValues = regStart.Matches(input)[0].Groups;
+                    StartNode(Int32.Parse(strtValues[1].Value));
                     break;
             }
         }
+
+
     }
 }

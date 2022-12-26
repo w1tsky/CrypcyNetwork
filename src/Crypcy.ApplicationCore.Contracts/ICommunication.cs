@@ -1,4 +1,6 @@
-﻿namespace Crypcy.ApplicationCore.Contracts
+﻿using System.Net;
+
+namespace Crypcy.ApplicationCore.Contracts
 {
     public interface ICommunication
     {
@@ -7,7 +9,10 @@
         public event Action<string> OnNodeDisconnected;
         public event Action<string, string> OnNewMessageRecived;
 
+        public void Start(IPEndPoint iPEnd);
         public void SendMessage(string node, string message);
         public void DropNodeConnection(string node);
+
+        
     }
 }

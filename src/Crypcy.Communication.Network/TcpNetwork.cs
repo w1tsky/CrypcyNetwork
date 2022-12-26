@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Crypcy.Communication.Network
 {
-    public class Network : ICommunication
+    public class TcpNetwork : ICommunication
     {
         protected ConcurrentDictionary<string, Socket> _nodes = new ConcurrentDictionary<string, Socket>();
 
@@ -26,17 +26,15 @@ namespace Crypcy.Communication.Network
             _nodes[node].Send(Encoding.ASCII.GetBytes(message));
         }
 
-        public void Start(string ipAddress = "127.0.0.1", int port = 23466)
+        public void Start(IPEndPoint iPEndPoint)
         {
-            var parsedIpAddres = IPAddress.Parse(ipAddress);
-            var endpoint = new IPEndPoint(parsedIpAddres, port);
 
             var connectionHandlerCancellationToken = new CancellationToken();
             Task.Run(() =>
             {
                 using var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                tcpSocket.Bind(endpoint);
+                tcpSocket.Bind(iPEndPoint);
                 tcpSocket.Listen(100);
 
                 while (true)

@@ -21,8 +21,8 @@ namespace Crypcy.NodeConsole
             var nodes = new Nodes(network, console);
             // end DI
 
-            //network.Start();
-            Console.WriteLine("Node working...");
+            
+            
 
             while (true)
             {

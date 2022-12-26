@@ -15,6 +15,7 @@ namespace Crypcy.NodeUI.NodeLogic
         static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
 
         public event Action<string, string>? OnSendMessageRequest;
+        public event Action<int> OnStartNode;
 
         public void NodeConnectedNotification(string node)
         {

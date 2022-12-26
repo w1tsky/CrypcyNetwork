@@ -19,12 +19,14 @@ namespace Crypcy.ApplicationCore
             _communication.OnNodeDisconnected += NodeDisconected;
             _communication.OnNewMessageRecived += MessegeRecived;
             _interactionHandler.OnSendMessageRequest += SendMessage;
-           
+            _interactionHandler.OnStartNode += NodeStart;
+
+
         }
 
-        protected void NodeStart(IPEndPoint iPEnd)
+        protected void NodeStart(int port)
         {
-            _communication.Start(iPEnd);
+            _communication.Start(port);
         }
 
         protected void NodeConnected(string node) 

@@ -18,10 +18,10 @@ namespace Crypcy.NodeConsole
         
         public event Action<string, string>? OnSendMessageRequest;
 
-        public void StartNode(int port)
-        {
-            throw new NotImplementedException();
-        }
+        public event Action<int> OnStartNode;
+
+
+     
 
         public void NodeConnectedNotification(string node)
         {
@@ -57,7 +57,7 @@ namespace Crypcy.NodeConsole
         internal void NewInput(string input) 
         {
             var regMessage = new Regex(@"(\d+)msg:(.+)$");
-            var regStart = new Regex(@"start:\b(1024|1[0-9]{3}|2[0-4][0-9]{2}|49[0-1][0-9]{2}|49150)\b");
+            var regStart = new Regex(@"start:(\d+)");
             switch (input)
             {
                 case "l":
@@ -70,7 +70,8 @@ namespace Crypcy.NodeConsole
                     break;
                 case var strt when regStart.IsMatch(strt):
                     var strtValues = regStart.Matches(input)[0].Groups;
-                    StartNode(Int32.Parse(strtValues[1].Value));
+                    OnStartNode?.Invoke(Int32.Parse(strtValues[1].Value));
+                    Console.WriteLine("Node working...");
                     break;
             }
         }

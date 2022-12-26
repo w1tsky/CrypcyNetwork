@@ -9,7 +9,7 @@ namespace Crypcy.ApplicationCore.Contracts
         public event Action<string> OnNodeDisconnected;
         public event Action<string, string> OnNewMessageRecived;
 
-        public void Start(IPEndPoint iPEnd);
+        public void Start(int port);
         public void SendMessage(string node, string message);
         public void DropNodeConnection(string node);
 

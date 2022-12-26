@@ -26,7 +26,7 @@ namespace Crypcy.Communication.Network
             _nodes[node].Send(Encoding.ASCII.GetBytes(message));
         }
 
-        public void Start(IPEndPoint iPEndPoint)
+        public void Start(int port)
         {
 
             var connectionHandlerCancellationToken = new CancellationToken();
@@ -34,7 +34,7 @@ namespace Crypcy.Communication.Network
             {
                 using var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                tcpSocket.Bind(iPEndPoint);
+                tcpSocket.Bind(new IPEndPoint(IPAddress.Any, port));
                 tcpSocket.Listen(100);
 
                 while (true)

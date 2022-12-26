@@ -18,10 +18,7 @@ namespace Crypcy.NodeConsole
         
         public event Action<string, string>? OnSendMessageRequest;
 
-        public event Action<int> OnStartNode;
-
-
-     
+        public event Action<int>? OnStartNode;
 
         public void NodeConnectedNotification(string node)
         {

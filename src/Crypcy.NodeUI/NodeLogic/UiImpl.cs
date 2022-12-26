@@ -17,39 +17,34 @@ namespace Crypcy.NodeUI.NodeLogic
         public event Action<string, string>? OnSendMessageRequest;
         public event Action<int> OnStartNode;
 
+        public event Action<string> OnNodeConnected;
+        public event Action<string> OnNodeDiconnected;
+        public event Action<string, string> OnMessageReceived;
+
         public void NodeConnectedNotification(string node)
         {
             var index = (++_indexCounter).ToString();
             _nodes[index] = node;
+            OnNodeConnected?.Invoke(node);
         }
 
         public void NodeDiconnectedNotification(string node)
         {
             var n = GetNodePairIndexByNode(node);
             _nodes.Remove(n.Key, out var _);
+            OnNodeDiconnected?.Invoke(n.Key);
         }
 
         public void ShowMessage(string node, string message)
         {
             var n = GetNodePairIndexByNode(node);
+            OnMessageReceived.Invoke(n.Value, message);
         }
 
-        public void ShowConnectedNodes()
-        {
-            foreach (var n in _nodes)
-            {
-                // Show in UI
-            }
-                
-        }
         protected KeyValuePair<string, string> GetNodePairIndexByNode(string node)
         {
             return _nodes.Single(n => n.Value == node);
         }
 
-        public void StartNode(int port)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

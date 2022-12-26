@@ -10,8 +10,8 @@ namespace Crypcy.ApplicationCore.Contracts
     public interface IUserInterface
     {
         public event Action<string, string> OnSendMessageRequest;
-        public event Action<int> OnStartNode;
 
+        public event Action<int> OnStartNode;
 
         void ShowMessage(string node, string message);
 

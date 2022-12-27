@@ -8,7 +8,7 @@ namespace Crypcy.NodeUI.Models
 {
     public class NodeMessage
     {
-        public string NodeSender { get; set; }
-        public string NodeMessageText { get; set; } 
+        public string Sender { get; set; }
+        public string Text { get; set; } 
     }
 }

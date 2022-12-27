@@ -2,17 +2,16 @@
 
 namespace Crypcy.ApplicationCore.Contracts
 {
-    public interface ICommunication
-    {
-        public IReadOnlyCollection<string> ConnectedNodes { get; }
-        public event Action<string> OnNodeConnected;
-        public event Action<string> OnNodeDisconnected;
-        public event Action<string, string> OnNewMessageRecived;
+	public interface ICommunication
+	{
+		IReadOnlyCollection<string> ConnectedNodes { get; }
+		event Action<string> OnNodeConnected;
+		event Action<string> OnNodeDisconnected;
+		event Action<string, string> OnNewMessageRecived;
 
-        public void Start(int port);
-        public void SendMessage(string node, string message);
-        public void DropNodeConnection(string node);
-
-        
-    }
+		Task StartAsync(int port, CancellationToken ct);
+		void SendMessage(string node, string message);
+		void DropNodeConnection(string node);
+		Task ConnectToNode(string ip, int port);
+	}
 }

@@ -7,16 +7,13 @@ using System.Threading.Tasks;
 
 namespace Crypcy.ApplicationCore.Contracts
 {
-    public interface IUserInterface
-    {
-        public event Action<string, string> OnSendMessageRequest;
-        public event Action<int> OnStartNode;
-
-
-        void ShowMessage(string node, string message);
-
-        void NodeConnectedNotification(string node);
-
-        void NodeDiconnectedNotification(string node);
-    }
+	public interface IUserInterface
+	{
+		event Action<string, string> OnSendMessageRequest;
+		event Action<int> OnStartNode;
+		event Action<string, int> OnConnectToNodeRequest;
+		void ShowMessage(string node, string message);
+		void NodeConnectedNotification(string node);
+		void NodeDiconnectedNotification(string node);
+	}
 }

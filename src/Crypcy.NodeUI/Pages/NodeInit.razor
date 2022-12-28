@@ -57,7 +57,7 @@
         network = new TcpNetwork();
         nodes = new Nodes(network, _ui);
 
-        network.Start(23551);
+        network.StartAsync(23551);
 
         _ui.OnNodeConnected += NodeConnected;
         _ui.OnNodeDiconnected += NodeDiconnected;
@@ -66,7 +66,7 @@
 
     private void StartMethod(int port)
     {
-        network.Start(port);
+        network.StartAsync(port);
     }
 
 

@@ -20,6 +20,7 @@ namespace Crypcy.NodeUI.NodeLogic
         public event Action<string> OnNodeConnected;
         public event Action<string> OnNodeDiconnected;
         public event Action<string, string> OnMessageReceived;
+        public event Action<string, int> OnConnectToNodeRequest;
 
         public void NodeConnectedNotification(string node)
         {

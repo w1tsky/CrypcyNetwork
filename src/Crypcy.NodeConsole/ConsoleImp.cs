@@ -16,9 +16,6 @@ namespace Crypcy.NodeConsole
 		protected static int _indexCounter { get; set; } = 0;
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
 
-<<<<<<< HEAD
-        public event Action<int>? OnStartNode;
-=======
 		public event Action<string, string>? OnSendMessageRequest;
 		public event Action<int>? OnStartNode;
 		public event Action<string, int>? OnConnectToNodeRequest;
@@ -30,7 +27,6 @@ namespace Crypcy.NodeConsole
 
 			Console.WriteLine($"New client connected: NodeIndex:{index}; Node:{node};");
 		}
->>>>>>> fe1e7c1dd8dd374db39247b012a505b26f9a010d
 
 		public void NodeDiconnectedNotification(string node)
 		{

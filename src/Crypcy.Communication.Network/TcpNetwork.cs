@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Crypcy.Communication.Network
 {
-	public class TcpNetwork : ICommunication, IDisposable
+	public sealed class TcpNetwork : ICommunication, IDisposable
 	{
-		protected ConcurrentDictionary<string, TcpClient> _nodes = new ();
+		private ConcurrentDictionary<string, TcpClient> _nodes = new ();
 		public IReadOnlyCollection<string> ConnectedNodes => _nodes.Keys.ToList().AsReadOnly();
 
 		private IPEndPoint _endPoint;
@@ -16,28 +16,6 @@ namespace Crypcy.Communication.Network
 		public event Action<string> OnNodeConnected = (_) => { };
 		public event Action<string> OnNodeDisconnected = (_) => { };
 		public event Action<string, string> OnNewMessageRecived = (_, _) => { };
-
-		public void DropNodeConnection(string node)
-		{
-			throw new NotImplementedException();
-		}
-
-		public async Task ConnectToNode(string ip, int port) 
-		{
-			var client = new TcpClient();
-			client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-			client.Client.Bind(_endPoint);
-			await client.ConnectAsync(IPAddress.Parse(ip), port);
-
-			NewClientHandleAsync(client);
-		}
-
-		public void SendMessage(string node, string message)
-		{
-			var data = Encoding.ASCII.GetBytes(message);
-			var size = BitConverter.GetBytes(data.Length);
-			_nodes[node].GetStream().WriteAsync(size.Concat(data).ToArray());
-		}
 
 		public async Task StartAsync(int port, CancellationToken ct = default)
 		{
@@ -49,23 +27,40 @@ namespace Crypcy.Communication.Network
 				NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
 			tcpListener.Stop();
 		}
-
-		protected async Task NewClientHandleAsync(TcpClient client, CancellationToken ct = default)
+		public async Task ConnectToNode(string ip, int port)
 		{
+			var client = new TcpClient();
+			client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+			client.Client.Bind(_endPoint);
+			await client.ConnectAsync(IPAddress.Parse(ip), port);
+
+			NewClientHandleAsync(client);
+		}
+		public void DropNodeConnection(string node)
+		{
+			_nodes[node].Close();
+			_nodes.Remove(node, out var _);
+			OnNodeDisconnected.Invoke(node);
+		}
+
+		public void SendMessage(string node, string message)
+		{
+			var data = Encoding.ASCII.GetBytes(message);
+			var size = BitConverter.GetBytes(data.Length);
+			_nodes[node].GetStream().WriteAsync(size.Concat(data).ToArray());
+		}
+
+		private async Task NewClientHandleAsync(TcpClient client, CancellationToken ct = default)
+		{
+			var index = Guid.NewGuid().ToString();
 			try
 			{
-				var index = Guid.NewGuid().ToString();
 				_nodes[index] = client;
 				OnNodeConnected.Invoke(index);
 
 				void closeConnectionIfRecived0bytes(TcpClient client, int readed)
 				{
-					if (readed != 0) return;
-
-					client.Close();
-					_nodes.Remove(index, out var _);
-					OnNodeDisconnected.Invoke(index);
-					throw new Exception("Disconnected");
+					if (readed == 0) throw new Exception("Disconnected");
 				}
 
 				var stream = client.GetStream();
@@ -83,18 +78,20 @@ namespace Crypcy.Communication.Network
 			}
 			finally
 			{
-				if (client.Connected) client.Close();
+				DropNodeConnection(index);
 			}
 		}
 
 		public void Dispose()
 		{
-			foreach (var n in _nodes) 
-			{
+			foreach (var n in _nodes)
 				if (n.Value.Connected)
+				{
 					n.Value.Close();
-				n.Value.Dispose();
-			}
+					OnNodeDisconnected.Invoke(n.Key);
+				}
+
+			_nodes.Clear();
 		}
 	}
 }

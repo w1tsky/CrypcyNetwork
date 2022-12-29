@@ -1,5 +1,8 @@
-﻿using Crypcy.NodeUI.Data;
+﻿using Crypcy.ApplicationCore;
+using Crypcy.Communication.Network;
+using Crypcy.NodeUI.Services;
 using Microsoft.Extensions.Logging;
+using Windows.Services.Maps;
 
 namespace Crypcy.NodeUI
 {
@@ -17,12 +20,19 @@ namespace Crypcy.NodeUI
 
             builder.Services.AddMauiBlazorWebView();
 
-#if DEBUG
-		builder.Services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
+         #if DEBUG
+		    builder.Services.AddBlazorWebViewDeveloperTools();
+		    builder.Logging.AddDebug();
 #endif
-
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<NodeEventsService>();
+            builder.Services.AddSingleton(provider =>
+            {
+                NodeUiService _ui = new NodeUiService();
+                TcpNetwork _network = new TcpNetwork();
+                Nodes _nodes = new Nodes(_network, _ui);
+                
+                return _ui;
+            });
 
             return builder.Build();
         }

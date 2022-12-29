@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="PeerNetwork\PeerUdp\**" />
+    <EmbeddedResource Remove="PeerNetwork\PeerUdp\**" />
+    <None Remove="PeerNetwork\PeerUdp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="PeerNetwork\Interfaces\PeerUdp\" />
-    <Folder Include="PeerNetwork\PeerUdp\" />
   </ItemGroup>
 
 </Project>

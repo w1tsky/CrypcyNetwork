@@ -1,26 +1,32 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Crypcy.NodeUI</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿<div class="sidebar navbar navbar-dark bg-dark">
+    <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse @NavMenuCssClass bg-dark p-4" @onclick="ToggleNavMenu">
+        <ul class="navbar-nav mr-auto text-white">
+            <li class="nav-item px-3">
+                <a class="nav-link text-white" href="">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link text-white" href="node">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Node
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="configuration p-4">
+        <h5 class="text-white py-2">Configuration</h5>
+        <div class="form-group py-2">
+            <label for="port-input" class="text-white">Port:</label>
+            <input id="port-input" type="number" class="form-control" placeholder="Enter an port..." @*@bind-value="port" @bind-value:event="oninput" *@ />
+            <button type="button" class="btn btn-primary" @*@onclick="() => StartMethod(port)" *@>Start</button>
+        </div>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-    </nav>
-</div>
+
 
 @code {
     private bool collapseNavMenu = true;

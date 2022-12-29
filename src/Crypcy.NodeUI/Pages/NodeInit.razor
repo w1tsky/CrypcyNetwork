@@ -1,16 +1,106 @@
-﻿@page "/counter"
+﻿@page "/node"
+@using Crypcy.ApplicationCore;
+@using Crypcy.Communication.Network;
+@using Crypcy.NodeUI.NodeLogic;
+@using Crypcy.NodeUI.Models;
 
-<h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="container-fluid main-container h-100 bg-dark text-white p-0">
+    <div class="row h-100">
+        <div class="col-md-8 chat-container p-0">
+            <div class="chat-header bg-primary p-2 d-flex justify-content-between align-items-center">
+                <h5 class="text-white m-0">Chat</h5>
+            </div>
+            <div class="chat-body overflow-auto p-4 bg-secondary h-100">
+                <div class="messages d-flex flex-column h-100">
+                    @foreach (var message in _messages)
+                    {
+                        <div class="font-weight-bold text-white py-2">@message.Sender:</div>
+                        <div class="font-weight-normal text-white py-2">@message.Text</div>
+                    }
+                </div>
+            </div>
+            <div class="chat-footer p-2 d-flex align-items-center">
+                <input type="text" class="form-control w-100" placeholder="Enter message..." />
+                <button type="button" class="btn btn-primary ml-2">Send</button>
+            </div>
+        </div>
+        <div class="col-md-4 connected-nodes bg-dark p-0 h-100">
+            <div class="p-4 h-100 d-flex flex-column">
+                <h5 class="text-white py-2">Connected Nodes</h5>
+                <ul class="list-group list-group-flush h-100">
+                    @foreach (var node in _nodes)
+                    {
+                        <li class="list-group-item py-2">@node</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+    List<string> _nodes = new List<string>();
+    List<NodeMessage> _messages = new List<NodeMessage>();
+
+    private int port;
+
+    UiImpl _ui;
+    TcpNetwork network;
+    Nodes nodes;
+
+    protected override void OnInitialized()
     {
-        currentCount++;
+        _ui = new UiImpl();
+        network = new TcpNetwork();
+        nodes = new Nodes(network, _ui);
+
+        network.StartAsync(23551);
+
+        _ui.OnNodeConnected += NodeConnected;
+        _ui.OnNodeDiconnected += NodeDiconnected;
+        _ui.OnMessageReceived += ReceiveMessage;
+    }
+
+    private void StartMethod(int port)
+    {
+        network.StartAsync(port);
+    }
+
+
+    private async void NodeConnected(string node)
+    {
+
+        await InvokeAsync(() =>
+        {
+            _nodes.Add(node);
+            StateHasChanged();
+        });
+
+    }
+
+    private async void NodeDiconnected(string node)
+    {
+        await InvokeAsync(() =>
+        {
+            _nodes.Remove(node);
+            StateHasChanged();
+        });
+    }
+
+    private async void ReceiveMessage(string node, string message)
+    {
+        await InvokeAsync(() =>
+        {
+            _messages.Add(new NodeMessage
+                {
+                    Sender = node,
+                    Text = message,
+                });
+            StateHasChanged();
+        });
     }
 }
+

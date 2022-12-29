@@ -1,4 +1,7 @@
-﻿<Router AppAssembly="@typeof(Main).Assembly">
+﻿@using Crypcy.ApplicationCore;
+@using Crypcy.Communication.Network;
+@using Crypcy.NodeUI.Services;
+<Router AppAssembly="@typeof(Main).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -9,3 +12,4 @@
         </LayoutView>
     </NotFound>
 </Router>
+

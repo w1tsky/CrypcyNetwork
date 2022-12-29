@@ -9,11 +9,10 @@ namespace Crypcy.Communication.Network
 	public sealed class TcpNetwork : ICommunication, IDisposable
 	{
 		private ConcurrentDictionary<string, TcpClient> _nodes = new ();
-		public IReadOnlyCollection<string> ConnectedNodes => _nodes.Keys.ToList().AsReadOnly();
-
 		private IPEndPoint _endPoint;
+        public IReadOnlyCollection<string> ConnectedNodes => _nodes.Keys.ToList().AsReadOnly();
 
-		public event Action<string> OnNodeConnected = (_) => { };
+        public event Action<string> OnNodeConnected = (_) => { };
 		public event Action<string> OnNodeDisconnected = (_) => { };
 		public event Action<string, string> OnNewMessageRecived = (_, _) => { };
 

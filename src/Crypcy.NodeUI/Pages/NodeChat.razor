@@ -1,0 +1,103 @@
+﻿@page "/chat"
+@using Crypcy.NodeUI.Services
+@using Crypcy.NodeUI.Models
+@using System.Reactive.Linq;
+@inject NodeUiService UiService
+@inject NodeEventsService nodeEventsService
+
+<div class="main-container container-fluid bg-dark text-white h-100 mh-70">
+    <div class="row h-100">
+        <div class="chat-container col-md-8 h-100 p-0 d-flex flex-column">
+            <div class="chat-header p-2 d-flex justify-content-between align-items-center">
+                <h5 class="text-white m-0">Chat</h5>
+            </div>
+            <div class="chat-body overflow-auto p-4 bg-secondary flex-grow-1">
+                <div class="messages d-flex flex-column">
+                    @foreach (var message in messages)
+                    {
+                        <div class="font-weight-bold text-white py-2">@message.Sender:</div>
+                        <div class="font-weight-normal text-white py-2">@message.Text</div>
+                    }
+                </div>
+            </div>
+            <div class="chat-footer p-2 d-flex align-items-center">
+                <input type="text" class="form-control w-100" placeholder="Enter message..." @bind-value="message" @bind-value:event="oninput" />
+                <button type="button" class="btn btn-primary ml-2" @onclick="() => SendMessage(selectedNode, message)">Send</button>
+            </div>
+        </div>
+        <div class="connected-nodes col-md-4 bg-dark p-0 flex-grow-1">
+            <div class="p-4 d-flex flex-column">
+                <h5 class="text-white py-2">Connected Nodes</h5>
+                <ul class="list-group list-group-flush h-100">
+                    @foreach (var node in connectedNodes)
+                    {
+                        <li class="list-group-item p-2 @(node == selectedNode ? "active" : "")" @onclick="() => selectedNode = node">@node</li>
+                    }
+                </ul> 
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<string> connectedNodes; 
+    List<NodeMessage> messages = new List<NodeMessage>();
+
+    string selectedNode;
+    string message;
+
+    protected override void OnInitialized()
+    {
+        connectedNodes = UiService.GetConnectedNodes();
+
+        IObservable<(string nodeId, bool isConnected)> isConnectedObservable = nodeEventsService.NodeConnectedObservable
+            .Select(nodeId => (nodeId, true))
+            .Merge(nodeEventsService.NodeDisconnectedObservable.Select(nodeId => (nodeId, false)));
+
+        isConnectedObservable.Subscribe(tuple =>
+        {
+            string nodeId = tuple.nodeId;
+            bool isConnected = tuple.isConnected;
+            if (isConnected)
+            {
+                connectedNodes.Add(nodeId);
+            }
+            else
+            {
+                connectedNodes.Remove(nodeId);
+            }
+            StateHasChanged();
+        });
+    }
+
+
+    private async void SendMessage(string node, string message)
+    {
+        await InvokeAsync(() =>
+        {
+                messages.Add(new NodeMessage
+                {
+                    Sender = "Me",
+                    Text = message,
+                });
+            StateHasChanged();
+        });
+
+        UiService.NodeSendMessage(node, message);
+    }
+
+
+    private async void ReceiveMessage(string node, string message)
+    {
+        await InvokeAsync(() =>
+        {
+                messages.Add(new NodeMessage
+                {
+                    Sender = node,
+                    Text = message,
+                });
+            StateHasChanged();
+        });
+    }
+}
+

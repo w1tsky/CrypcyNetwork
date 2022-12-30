@@ -15,12 +15,14 @@ namespace Crypcy.NodeConsole
 	{
 		protected static int _indexCounter { get; set; } = 0;
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
+        static ConcurrentDictionary<string, List<string>> _nodeGroups = new ConcurrentDictionary<string, List<string>>();
 
-		public event Action<string, string>? OnSendMessageRequest;
+        public event Action<string, string>? OnSendMessageRequest;
 		public event Action<int>? OnStartNode;
 		public event Action<string, int>? OnConnectToNodeRequest;
+        public event Action<string> OnCreateGroupRequest;
 
-		public void NodeConnectedNotification(string node)
+        public void NodeConnectedNotification(string node)
 		{
 			var index = (++_indexCounter).ToString();
 			_nodes[index] = node;
@@ -46,7 +48,13 @@ namespace Crypcy.NodeConsole
 			foreach (var n in _nodes)
 				Console.WriteLine($"NodeIndex:{n.Key}; Node:{n.Value};");
 		}
-		protected KeyValuePair<string, string> GetNodePairIndexByNode(string node)
+
+        public void ShowGroup(string group)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected KeyValuePair<string, string> GetNodePairIndexByNode(string node)
 		{
 			return _nodes.Single(n => n.Value == node);
 		}
@@ -91,5 +99,7 @@ namespace Crypcy.NodeConsole
 				return;
 			}
 		}
-	}
+
+
+    }
 }

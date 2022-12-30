@@ -11,7 +11,7 @@ namespace Crypcy.ApplicationCore.Contracts
 
 		Task StartAsync(int port, CancellationToken ct);
 		void SendMessage(string node, string message);
-		void DropNodeConnection(string node);
+        void DropNodeConnection(string node);
 		Task ConnectToNode(string ip, int port);
 	}
 }

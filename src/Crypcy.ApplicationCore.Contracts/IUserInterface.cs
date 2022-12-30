@@ -9,11 +9,14 @@ namespace Crypcy.ApplicationCore.Contracts
 {
 	public interface IUserInterface
 	{
-		event Action<string, string> OnSendMessageRequest;
-		event Action<int> OnStartNode;
-		event Action<string, int> OnConnectToNodeRequest;
+        event Action<int> OnStartNode;
+        event Action<string, int> OnConnectToNodeRequest;
+        event Action<string> OnCreateGroupRequest;
+        event Action<string, string> OnSendMessageRequest;
+		
 		void ShowMessage(string node, string message);
-		void NodeConnectedNotification(string node);
+        void ShowGroup(string group);
+        void NodeConnectedNotification(string node);
 		void NodeDiconnectedNotification(string node);
 	}
 }

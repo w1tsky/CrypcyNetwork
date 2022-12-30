@@ -49,13 +49,13 @@
 
     UiImpl _ui;
     TcpNetwork network;
-    Nodes nodes;
+    Node nodes;
 
     protected override void OnInitialized()
     {
         _ui = new UiImpl();
         network = new TcpNetwork();
-        nodes = new Nodes(network, _ui);
+        nodes = new Node(network, _ui);
 
         network.StartAsync(23551);
 

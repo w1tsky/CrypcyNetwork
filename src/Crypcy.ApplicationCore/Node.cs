@@ -3,16 +3,20 @@ using System.Net;
 
 namespace Crypcy.ApplicationCore
 {
-	public class Nodes
+	public class Node
 	{
-		protected HashSet<string> _nodes = new HashSet<string>();
+		protected HashSet<string> _nodes;
+		protected NodeGroup _nodeGroups;
 
 		private readonly ICommunication _communication;
 		private readonly IUserInterface _userInterface;
 
-		public Nodes(ICommunication communication, IUserInterface userInterface)
+		public Node(ICommunication communication, IUserInterface userInterface)
 		{
-			_communication = communication;
+			_nodes = new HashSet<string>();
+			_nodeGroups = new NodeGroup(_nodes);
+
+            _communication = communication;
 			_userInterface = userInterface;
 
 			_communication.OnNodeConnected += NodeConnected;
@@ -21,6 +25,8 @@ namespace Crypcy.ApplicationCore
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
 			_userInterface.OnConnectToNodeRequest += ConnectToNode;
+			_userInterface.OnCreateGroupRequest += CreateGroup;
+
 		}
 
 		protected void ConnectToNode(string ip, int port)
@@ -54,5 +60,15 @@ namespace Crypcy.ApplicationCore
 			_userInterface.ShowMessage(node, message);
 		}
 
-	}
+        protected void CreateGroup(string groupName)
+        {
+			_nodeGroups.AddGroup(groupName);
+        }
+
+        protected void AddNodeToGroup(string groupName, string node)
+        {
+            _nodeGroups.AddNodeToGroup(groupName, node);
+        }
+
+    }
 }

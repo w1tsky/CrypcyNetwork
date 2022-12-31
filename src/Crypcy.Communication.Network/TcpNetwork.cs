@@ -92,5 +92,5 @@ namespace Crypcy.Communication.Network
 
 			_nodes.Clear();
 		}
-	}
+    }
 }

@@ -18,7 +18,7 @@ namespace Crypcy.NodeConsole
 			// DI:
 			var console = new ConsoleImp();
 			using var network = new TcpNetwork();
-			var nodes = new Nodes(network, console);
+			var node = new Node(network, console);
 			// end DI
 
 			while (true)

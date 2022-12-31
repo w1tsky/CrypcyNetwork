@@ -3,7 +3,6 @@
 @using Crypcy.NodeUI.Models
 @using System.Reactive.Linq;
 @inject NodeUiService UiService
-@inject NodeEventsService nodeEventsService
 
 <div class="main-container container-fluid bg-dark text-white h-100 mh-70">
     <div class="row h-100">
@@ -22,7 +21,7 @@
             </div>
             <div class="chat-footer p-2 d-flex align-items-center">
                 <input type="text" class="form-control w-100" placeholder="Enter message..." @bind-value="message" @bind-value:event="oninput" />
-                <button type="button" class="btn btn-primary ml-2" @onclick="() => SendMessage(selectedNode, message)">Send</button>
+                <button type="button" class="btn btn-primary" @onclick="() => SendMessage(selectedNode, message)">Send</button>
             </div>
         </div>
         <div class="connected-nodes col-md-4 bg-dark p-0 flex-grow-1">
@@ -49,27 +48,15 @@
     protected override void OnInitialized()
     {
         connectedNodes = UiService.GetConnectedNodes();
-
-        IObservable<(string nodeId, bool isConnected)> isConnectedObservable = nodeEventsService.NodeConnectedObservable
-            .Select(nodeId => (nodeId, true))
-            .Merge(nodeEventsService.NodeDisconnectedObservable.Select(nodeId => (nodeId, false)));
-
-        isConnectedObservable.Subscribe(tuple =>
+        UiService.OnNodeConnected += async (node) => await InvokeAsync(() =>
         {
-            string nodeId = tuple.nodeId;
-            bool isConnected = tuple.isConnected;
-            if (isConnected)
-            {
-                connectedNodes.Add(nodeId);
-            }
-            else
-            {
-                connectedNodes.Remove(nodeId);
-            }
             StateHasChanged();
-        });
+        }); 
+        UiService.OnNodeDisconnected += async (node) => await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        }); 
     }
-
 
     private async void SendMessage(string node, string message)
     {

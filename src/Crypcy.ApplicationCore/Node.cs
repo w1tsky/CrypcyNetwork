@@ -24,7 +24,8 @@ namespace Crypcy.ApplicationCore
 			_communication.OnNewMessageRecived += MessegeRecived;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
-			_userInterface.OnConnectToNodeRequest += ConnectToNode;
+            _userInterface.OnStopNode += NodeStop;
+            _userInterface.OnConnectToNodeRequest += ConnectToNode;
 			_userInterface.OnCreateGroupRequest += CreateGroup;
 
 		}
@@ -39,7 +40,12 @@ namespace Crypcy.ApplicationCore
 			_communication.StartAsync(port, CancellationToken.None);
 		}
 
-		protected void NodeConnected(string node)
+        protected void NodeStop(CancellationToken ct)
+        {
+            _communication.StartAsync(0, ct);
+        }
+
+        protected void NodeConnected(string node)
 		{
 			lock (_nodes) _nodes.Add(node);
 			_userInterface.NodeConnectedNotification(node);

@@ -30,19 +30,30 @@
         <div class="form-group py-2">
             <label for="port-input" class="text-white">Port:</label>
             <input id="port-input" type="number" class="form-control" placeholder="Enter an port..." @bind-value="port" @bind-value:event="oninput" />
-            <button type="button" class="btn btn-primary" @onclick="() => StartNode(port)">Start</button>
+            <button type="button" class="btn btn-primary @(isNodeStarted ? "disabled" : "")" @onclick="() => StartNode(port)">Start</button>
+            <button type="button" class="btn btn-secondary @(isNodeStarted ? "" : "disabled")" @onclick="() => StopNode()">Stop</button>
         </div>
     </div>
 </div>
 
 
 
+
+
 @code {
     private int port;
+    protected bool isNodeStarted = false;
 
     private void StartNode(int port)
     {
         UiService.NodeStart(port);
+        isNodeStarted = true;
+    }
+
+    private void StopNode()
+    {
+        UiService.NodeStop();
+        isNodeStarted = false;
     }
 
     private bool collapseNavMenu = true;

@@ -14,6 +14,7 @@ namespace Crypcy.NodeUI.Services
         public List<string> Nodes = new List<string>();
 
         public event Action<int> OnStartNode;
+        public event Action<CancellationToken> OnStopNode;
 
         public event Action<string> OnNodeConnected;
         public event Action<string> OnNodeDisconnected;
@@ -22,10 +23,16 @@ namespace Crypcy.NodeUI.Services
 
         public event Action<string, int> OnConnectToNodeRequest;
         public event Action<string, string> OnSendMessageRequest;
+        public event Action<string> OnCreateGroupRequest;
 
         public void NodeStart(int port)
         {
             OnStartNode.Invoke(port);
+        }
+
+        public void NodeStop(CancellationToken ct = default)
+        {
+            OnStopNode.Invoke(ct);
         }
 
         public void NodeConnect(string ip, int port)
@@ -60,7 +67,9 @@ namespace Crypcy.NodeUI.Services
             return Nodes;
         }
 
-
-
+        public void ShowGroup(string group)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

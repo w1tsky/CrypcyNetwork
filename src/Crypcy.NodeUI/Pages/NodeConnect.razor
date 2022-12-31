@@ -2,8 +2,6 @@
 @using Crypcy.NodeUI.Services
 @using System.Reactive.Linq;
 @inject NodeUiService UiService
-@inject NodeEventsService nodeEventsService
-
 
 <div class="container-fluid">
     <div class="row">
@@ -43,27 +41,15 @@
     protected override void OnInitialized()
     {
         connectedNodes = UiService.GetConnectedNodes();
-
-        IObservable<(string nodeId, bool isConnected)> isConnectedObservable = nodeEventsService.NodeConnectedObservable
-            .Select(nodeId => (nodeId, true))
-            .Merge(nodeEventsService.NodeDisconnectedObservable.Select(nodeId => (nodeId, false)));
-
-        isConnectedObservable.Subscribe(tuple =>
+        UiService.OnNodeConnected += async (node) => await InvokeAsync(() =>
         {
-            string nodeId = tuple.nodeId;
-            bool isConnected = tuple.isConnected;
-            if (isConnected)
-            {
-                connectedNodes.Add(nodeId);
-            }
-            else
-            {
-                connectedNodes.Remove(nodeId);
-            }
+            StateHasChanged();
+        });
+        UiService.OnNodeDisconnected += async (node) => await InvokeAsync(() =>
+        {
             StateHasChanged();
         });
     }
-
 
 
     void ConnectToNode(string ipAddress, int port)

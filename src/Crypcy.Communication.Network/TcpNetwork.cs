@@ -9,21 +9,21 @@ namespace Crypcy.Communication.Network
 	public sealed class TcpNetwork : ICommunication, IDisposable
 	{
 		private ConcurrentDictionary<string, TcpClient> _nodes = new ();
-		private IPEndPoint _endPoint;
+		private IPEndPoint? _endPoint;
         public IReadOnlyCollection<string> ConnectedNodes => _nodes.Keys.ToList().AsReadOnly();
 
         public event Action<string> OnNodeConnected = (_) => { };
 		public event Action<string> OnNodeDisconnected = (_) => { };
 		public event Action<string, string> OnNewMessageRecived = (_, _) => { };
 
-		public async Task StartAsync(int port, CancellationToken ct = default)
+		public async Task StartAsync(int port = 0, CancellationToken ct = default)
 		{
 			_endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
 			var tcpListener = new TcpListener(_endPoint);
 			tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			tcpListener.Start(100);
 			while (!ct.IsCancellationRequested)
-				NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
+                await NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
 			tcpListener.Stop();
 		}
 		public async Task ConnectToNode(string ip, int port)
@@ -33,7 +33,7 @@ namespace Crypcy.Communication.Network
 			client.Client.Bind(_endPoint);
 			await client.ConnectAsync(IPAddress.Parse(ip), port);
 
-			NewClientHandleAsync(client);
+            await NewClientHandleAsync(client);
 		}
 		public void DropNodeConnection(string node)
 		{
@@ -92,5 +92,6 @@ namespace Crypcy.Communication.Network
 
 			_nodes.Clear();
 		}
+
     }
 }

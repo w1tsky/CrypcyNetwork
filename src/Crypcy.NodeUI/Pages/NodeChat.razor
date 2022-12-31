@@ -40,7 +40,7 @@
 
 @code {
     List<string> connectedNodes; 
-    List<NodeMessage> messages = new List<NodeMessage>();
+    List<Message> messages = new List<Message>();
 
     string selectedNode;
     string message;
@@ -62,7 +62,7 @@
     {
         await InvokeAsync(() =>
         {
-                messages.Add(new NodeMessage
+            messages.Add(new Message
                 {
                     Sender = "Me",
                     Text = message,
@@ -78,7 +78,7 @@
     {
         await InvokeAsync(() =>
         {
-                messages.Add(new NodeMessage
+                messages.Add(new Message
                 {
                     Sender = node,
                     Text = message,

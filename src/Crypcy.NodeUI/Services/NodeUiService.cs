@@ -11,7 +11,7 @@ namespace Crypcy.NodeUI.Services
 {
     public class NodeUiService : IUserInterface
     {
-        public List<string> Nodes = new List<string>();
+        private List<string> _nodes = new List<string>();
 
         public event Action<int> OnStartNode;
         public event Action<CancellationToken> OnStopNode;
@@ -27,12 +27,12 @@ namespace Crypcy.NodeUI.Services
 
         public void NodeStart(int port)
         {
-            OnStartNode.Invoke(port);
+            OnStartNode?.Invoke(port);
         }
 
         public void NodeStop(CancellationToken ct = default)
         {
-            OnStopNode.Invoke(ct);
+            OnStopNode?.Invoke(ct);
         }
 
         public void NodeConnect(string ip, int port)
@@ -47,24 +47,24 @@ namespace Crypcy.NodeUI.Services
 
         public void NodeConnectedNotification(string node)
         {
-            Nodes.Add(node);   
+            _nodes.Add(node);   
             OnNodeConnected?.Invoke(node);
         }
 
         public void NodeDiconnectedNotification(string node)
         {
-            Nodes.Remove(node);
+            _nodes.Remove(node);
             OnNodeDisconnected?.Invoke(node);
         }
 
         public void ShowMessage(string node, string message)
         {
-            OnMessageReceived.Invoke(node, message);
+            OnMessageReceived?.Invoke(node, message);
         }
 
         public List<string> GetConnectedNodes()
         {
-            return Nodes;
+            return _nodes;
         }
 
         public void ShowGroup(string group)

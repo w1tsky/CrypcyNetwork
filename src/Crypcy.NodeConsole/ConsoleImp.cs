@@ -19,10 +19,10 @@ namespace Crypcy.NodeConsole
 
         
 		public event Action<int>? OnStartNode;
-        public event Action<CancellationToken> OnStopNode;
+        public event Action<CancellationToken>? OnStopNode;
         public event Action<string, string>? OnSendMessageRequest;
         public event Action<string, int>? OnConnectToNodeRequest;
-        public event Action<string> OnCreateGroupRequest;
+        public event Action<string>? OnCreateGroupRequest;
         
 
         public void NodeConnectedNotification(string node)

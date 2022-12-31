@@ -17,10 +17,13 @@ namespace Crypcy.NodeConsole
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
         static ConcurrentDictionary<string, List<string>> _nodeGroups = new ConcurrentDictionary<string, List<string>>();
 
-        public event Action<string, string>? OnSendMessageRequest;
+        
 		public event Action<int>? OnStartNode;
-		public event Action<string, int>? OnConnectToNodeRequest;
-        public event Action<string> OnCreateGroupRequest;
+        public event Action<CancellationToken>? OnStopNode;
+        public event Action<string, string>? OnSendMessageRequest;
+        public event Action<string, int>? OnConnectToNodeRequest;
+        public event Action<string>? OnCreateGroupRequest;
+        
 
         public void NodeConnectedNotification(string node)
 		{

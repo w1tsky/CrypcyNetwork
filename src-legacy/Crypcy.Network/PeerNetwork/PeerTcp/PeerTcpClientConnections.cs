@@ -57,7 +57,7 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
             try
             {
-                tcpClient.BeginConnect(connectEndpoint.Address, connectEndpoint.Port, TcpConnectHandle, TcpClient);
+                tcpClient.BeginConnect(connectEndpoint.Address, connectEndpoint.Port, TcpConnectHandle, tcpClient);
             }
             catch (Exception ex)
             {

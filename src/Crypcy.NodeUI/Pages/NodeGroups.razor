@@ -1,0 +1,111 @@
+﻿@page "/groups"
+@using Crypcy.NodeUI.Models;
+@using Crypcy.NodeUI.Services
+@inject NodeUiService UiService
+
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col-9 p-4">
+            <h4>@SelectedGroup.Name</h4>
+            <hr class="bg-light" />
+            <div class="messages">
+                @foreach (var message in SelectedGroup.Messages)
+                {
+                    <div class="message @(message.Sender == UserName ? "text-right" : "")">
+                        <strong>@message.Sender</strong>: @message.Text
+                    </div>
+                }
+            </div>
+            <form @onsubmit="SendMessage" class="input-group mt-3">
+                <input type="text" class="form-control" placeholder="Enter a message..." @bind="Message">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-3 bg-secondary p-4">
+            <h4>Chat Groups</h4>
+            <hr class="bg-light" />
+            <ul class="list-unstyled">
+                @foreach (var group in NodeGroup)
+                {
+                    <li @onclick="() => SelectGroup(group)" class="@(group == SelectedGroup ? "text-primary font-weight-bold" : "")">
+                        <i class="fa fa-hashtag mr-2" aria-hidden="true"></i>@group.Name
+                        <div class="dropdown">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Nodes
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                @foreach (var node in group.Nodes)
+                                {
+                                    <a class="dropdown-item" href="#">@node</a>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    private string UserName { get; set; } = "User 1";
+    private NodeGroup SelectedGroup { get; set; }
+    private string Message { get; set; }
+    private List<NodeGroup> NodeGroup { get; set; }
+
+    protected override void OnInitialized()
+    {
+        NodeGroup = new List<NodeGroup>
+        {
+            new NodeGroup
+            {
+                Name = "Group 1",
+                Nodes = new List<string>
+                {
+                  "Node1",
+                  "Node2"
+                },
+                Messages = new List<Message>
+                {
+                    new Message { Sender = "User 2", Text = "Hello!" },
+                    new Message { Sender = "User 1", Text = "Hi!" }
+                }
+            },
+            new NodeGroup
+            {
+                Name = "Group 2",                
+                Nodes = new List<string>
+                {
+                  "Node4",
+                  "Node5"
+                },
+                Messages = new List<Message>
+                {
+                    new Message { Sender = "User 3", Text = "Hey!" },
+                    new Message { Sender = "User 1", Text = "Hi there!" }
+                }
+            }
+        };
+
+        SelectedGroup = NodeGroup.FirstOrDefault();
+    }
+
+    private void SelectGroup(NodeGroup group)
+    {
+        SelectedGroup = group;
+    }
+
+    private void SendMessage()
+    {
+        if (SelectedGroup != null)
+        {
+            SelectedGroup.Messages.Add(new Message { Sender = UserName, Text = Message });
+            Message = "";
+        }
+    }
+}

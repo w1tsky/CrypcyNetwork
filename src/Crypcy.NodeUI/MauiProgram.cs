@@ -29,7 +29,7 @@ namespace Crypcy.NodeUI
             {
                 NodeUiService _ui = new NodeUiService();
                 TcpNetwork _network = new TcpNetwork();
-                Nodes _nodes = new Nodes(_network, _ui);
+                Node _nodes = new Node(_network, _ui);
                 
                 return _ui;
             });

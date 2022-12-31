@@ -1,4 +1,8 @@
-﻿<div class="sidebar navbar navbar-dark bg-dark">
+﻿@using Crypcy.NodeUI.Services
+@inject NodeUiService UiService
+
+
+<div class="sidebar navbar navbar-dark bg-dark">
     <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -10,8 +14,13 @@
                 </a>
             </li>
             <li class="nav-item px-3">
-                <a class="nav-link text-white" href="node">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Node
+                <a class="nav-link text-white" href="connect">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Connect
+                </a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link text-white" href="chat">
+                    <span class="oi oi-chat" aria-hidden="true"></span> Chat
                 </a>
             </li>
         </ul>
@@ -20,8 +29,8 @@
         <h5 class="text-white py-2">Configuration</h5>
         <div class="form-group py-2">
             <label for="port-input" class="text-white">Port:</label>
-            <input id="port-input" type="number" class="form-control" placeholder="Enter an port..." @*@bind-value="port" @bind-value:event="oninput" *@ />
-            <button type="button" class="btn btn-primary" @*@onclick="() => StartMethod(port)" *@>Start</button>
+            <input id="port-input" type="number" class="form-control" placeholder="Enter an port..." @bind-value="port" @bind-value:event="oninput" />
+            <button type="button" class="btn btn-primary" @onclick="() => StartNode(port)">Start</button>
         </div>
     </div>
 </div>
@@ -29,6 +38,13 @@
 
 
 @code {
+    private int port;
+
+    private void StartNode(int port)
+    {
+        UiService.NodeStart(port);
+    }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;

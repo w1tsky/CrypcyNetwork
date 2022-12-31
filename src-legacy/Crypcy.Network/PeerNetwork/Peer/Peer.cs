@@ -53,7 +53,6 @@ namespace Crypcy.Network.PeerNetwork.Peer
         }
 
 
-
         public void StartPeer()
         {
             PeerTcpListener.TcpStartListen();

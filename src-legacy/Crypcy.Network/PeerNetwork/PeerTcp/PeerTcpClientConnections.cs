@@ -34,7 +34,10 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
             TcpBuffer = new byte[tcpBufferLenght];
 
             TcpClient = tcpClient;
-            
+            LocalEndPoint = (IPEndPoint?)TcpClient.Client.LocalEndPoint;
+
+
+
             TcpReceiveHandler = new PeerTcpReceiveHandler(TcpBuffer);
             TcpReceiveHandler.OnResultsUpdate += (sender, result) => OnResultsUpdate?.Invoke(this, result);
             TcpReceiveHandler.TcpPacketReceived += (packet) => TcpPacketReceived?.Invoke(packet);
@@ -43,9 +46,18 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
         public void TcpConnect(IPEndPoint connectEndpoint)
         {
+            TcpClient tcpClient = new TcpClient();
+
+            tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            tcpClient.Client.ExclusiveAddressUse = false;
+            tcpClient.Client.Bind(LocalEndPoint);
+
+            tcpClient.SendBufferSize = TcpBuffer.Length;
+            tcpClient.ReceiveBufferSize = TcpBuffer.Length;
+
             try
             {
-                TcpClient.BeginConnect(connectEndpoint.Address, connectEndpoint.Port, TcpConnectHandle, TcpClient);
+                tcpClient.BeginConnect(connectEndpoint.Address, connectEndpoint.Port, TcpConnectHandle, TcpClient);
             }
             catch (Exception ex)
             {
@@ -62,7 +74,7 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
                 tcpClient?.EndConnect(asyncResult);
                 TcpConnected?.Invoke(tcpClient);
 
-                tcpClient.Client.BeginReceive(TcpBuffer, 0, TcpBuffer.Length, SocketFlags.None, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
+                tcpClient.GetStream().BeginRead(TcpBuffer, 0, TcpBuffer.Length, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
 
                 OnResultsUpdate?.Invoke(this, $"Succecefully conneted to peer {tcpClient.Client.RemoteEndPoint}");
             }

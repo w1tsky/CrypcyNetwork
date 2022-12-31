@@ -22,6 +22,7 @@ namespace Crypcy.NodeUI.Services
 
         public event Action<string, int> OnConnectToNodeRequest;
         public event Action<string, string> OnSendMessageRequest;
+        public event Action<string> OnCreateGroupRequest;
 
         public void NodeStart(int port)
         {
@@ -60,7 +61,9 @@ namespace Crypcy.NodeUI.Services
             return Nodes;
         }
 
-
-
+        public void ShowGroup(string group)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

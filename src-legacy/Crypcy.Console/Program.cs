@@ -1,5 +1,4 @@
 ﻿using Crypcy.Network.PeerItems;
-using Crypcy.Network.PeerNetwork.Old;
 using Crypcy.Network.PeerNetwork.Peer;
 using System.Net;
 using System.Net.Sockets;

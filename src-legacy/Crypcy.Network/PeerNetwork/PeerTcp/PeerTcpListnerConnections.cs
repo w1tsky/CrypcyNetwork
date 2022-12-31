@@ -60,7 +60,7 @@ namespace Crypcy.Network.PeerNetwork.PeerTcp
 
             try
             {
-                tcpClient.Client.BeginReceive(TcpListenerBuffer, 0, TcpListenerBuffer.Length, SocketFlags.None, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
+                tcpClient.GetStream().BeginRead(TcpListenerBuffer, 0, TcpListenerBuffer.Length, TcpReceiveHandler.TcpReceiveHandler, tcpClient);
             }
             catch (Exception ex)
             {

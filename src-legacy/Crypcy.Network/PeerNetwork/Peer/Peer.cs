@@ -1,5 +1,4 @@
 ﻿using Crypcy.Network.PeerItems;
-using Crypcy.Network.PeerNetwork.Old;
 using Crypcy.Network.PeerNetwork.PeerTcp;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,6 @@ namespace Crypcy.Network.PeerNetwork.Peer
 
 
         }
-
 
 
         public void StartPeer()

@@ -50,9 +50,12 @@
         });
     }
 
-
-    void ConnectToNode(string ipAddress, int port)
+    private async void ConnectToNode(string ipAddress, int port)
     {
-        UiService.NodeConnect(ipAddress, port);
+        await InvokeAsync(() =>
+        {
+            UiService.NodeConnect(ipAddress, port);
+        });
     }
+
 }

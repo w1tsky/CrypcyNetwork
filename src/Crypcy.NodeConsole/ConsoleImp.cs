@@ -22,8 +22,9 @@ namespace Crypcy.NodeConsole
         public event Action<CancellationToken>? OnStopNode;
         public event Action<string, string>? OnSendMessageRequest;
         public event Action<string, int>? OnConnectToNodeRequest;
-        public event Action<string>? OnCreateGroupRequest;
-        
+		public event Action<string, HashSet<string>> OnCreateGroupRequest;
+        public event Action<string, string> OnSendGroupMessageRequest;
+
 
         public void NodeConnectedNotification(string node)
 		{

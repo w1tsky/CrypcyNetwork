@@ -8,13 +8,20 @@ namespace Crypcy.ApplicationCore
 		protected HashSet<string> _nodes;
 		protected NodeGroup _nodeGroups;
 
-		private readonly ICommunication _communication;
+
+        private CancellationToken _token;
+        private CancellationTokenSource _cts;
+
+        private readonly ICommunication _communication;
 		private readonly IUserInterface _userInterface;
 
 		public Node(ICommunication communication, IUserInterface userInterface)
 		{
 			_nodes = new HashSet<string>();
 			_nodeGroups = new NodeGroup(_nodes);
+
+            _cts = new ();
+            _token  = _cts.Token;
 
             _communication = communication;
 			_userInterface = userInterface;
@@ -24,9 +31,9 @@ namespace Crypcy.ApplicationCore
 			_communication.OnNewMessageRecived += MessegeRecived;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
-            _userInterface.OnStopNode += NodeStop;
             _userInterface.OnConnectToNodeRequest += ConnectToNode;
-			_userInterface.OnCreateGroupRequest += CreateGroup;
+			_userInterface.OnCreateGroupRequest += CreateNodeGroup;
+			_userInterface.OnSendGroupMessageRequest += SendMessageToGroup;
 
 		}
 
@@ -37,12 +44,12 @@ namespace Crypcy.ApplicationCore
 
 		protected void NodeStart(int port)
 		{
-			_communication.StartAsync(port, CancellationToken.None);
+			_communication.StartAsync(port, _token);
 		}
 
-        protected void NodeStop(CancellationToken ct)
+        protected void NodeStop()
         {
-            _communication.StartAsync(0, ct);
+			_cts.Cancel();
         }
 
         protected void NodeConnected(string node)
@@ -58,7 +65,7 @@ namespace Crypcy.ApplicationCore
 
 		protected void SendMessage(string node, string message)
 		{
-			_communication.SendMessage(node, message);
+			_communication.SendMessageAsync(node, message);
 		}
 
 		protected void MessegeRecived(string node, string message)
@@ -66,14 +73,22 @@ namespace Crypcy.ApplicationCore
 			_userInterface.ShowMessage(node, message);
 		}
 
-        protected void CreateGroup(string groupName)
+        protected void CreateNodeGroup(string groupName, HashSet<string> nodes)
         {
-			_nodeGroups.AddGroup(groupName);
+			_nodeGroups.AddGroup(groupName, nodes);
         }
+
 
         protected void AddNodeToGroup(string groupName, string node)
         {
             _nodeGroups.AddNodeToGroup(groupName, node);
+        }
+
+        protected void SendMessageToGroup(string groupName, string message)
+        {
+			Task.WaitAll(_nodeGroups.GetGroupNodes(groupName)
+				.Select(n => _communication.SendMessageAsync(n, message))
+				.ToArray());
         }
 
     }

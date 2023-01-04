@@ -18,16 +18,12 @@ namespace Crypcy.ApplicationCore
             _groups = new Dictionary<string, HashSet<string>>();
         }
 
-        public void AddGroup(string groupName)
-        {
-            _groups.Add(groupName, new HashSet<string>());
-        }
-        public void AddGroupWithNodes(string groupName, HashSet<string> groupNodes)
-        {
-            _groups.Add(groupName, groupNodes);
+        public void AddGroup(string groupName, HashSet<string> nodes = null)
+        { 
+            _groups.Add(groupName, nodes ?? new HashSet<string>());
         }
 
-        public HashSet<string> GetGroup(string groupName)
+        public HashSet<string> GetGroupNodes(string groupName)
         {
             return _groups[groupName];
         }

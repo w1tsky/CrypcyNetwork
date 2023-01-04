@@ -10,7 +10,7 @@ namespace Crypcy.ApplicationCore.Contracts
 		event Action<string, string> OnNewMessageRecived;
 
 		Task StartAsync(int port = 0, CancellationToken ct = default);
-        void SendMessage(string node, string message);
+        Task SendMessageAsync(string node, string message);
         void DropNodeConnection(string node);
 		Task ConnectToNode(string ip, int port);
     }

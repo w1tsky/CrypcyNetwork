@@ -1,0 +1,85 @@
+﻿@using Crypcy.NodeUI.Models;
+@using Crypcy.NodeUI.Services
+
+
+<div class="modal-header">
+    <h5 class="modal-title">Create Group</h5>
+    <button type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form>
+        <div class="form-group">
+            <label for="groupName">Group Name</label>
+            <input type="text" class="form-control" id="groupName" placeholder="Enter group name" @bind="groupName" />
+        </div>
+        <div class="form-group">
+            <label>Node List</label>
+            @foreach (var node in ConnectedNodes)
+            {
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" value="@node" @onchange="() => UpdateSelectedNodes(node)" />
+                    <label class="form-check-label">@node</label>
+                </div>
+            }
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" @onclick="@ModalClose">Cancel</button>
+    <button type="button" class="btn btn-primary" @onclick="@ModalCreateGroup">Create</button>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public List<string> ConnectedNodes { get; set; }
+    [Parameter]
+    public EventCallback<CreateGroupData> OnClose { get; set; }
+
+    private string groupName { get; set; }
+    private List<string> selectedNodes { get; set; } = new List<string>();
+
+    public class CreateGroupData
+    {
+        public bool Accepted { get; set; }
+        public NodeGroup NodeGroup { get; set; }
+    }
+
+    private void UpdateSelectedNodes(string node)
+    {
+        if (selectedNodes.Contains(node))
+        {
+            selectedNodes.Remove(node);
+        }
+        else
+        {
+            selectedNodes.Add(node);
+        }
+    }
+
+    private Task ModalClose()
+    {
+        return OnClose.InvokeAsync(new CreateGroupData());
+    }
+
+    private Task ModalCreateGroup()
+    {
+        var data = new CreateGroupData
+            {
+                Accepted = true,
+                NodeGroup = new NodeGroup
+                {
+                    Name = groupName,
+                    Nodes = selectedNodes,
+                    Messages = new List<Message>()
+                    
+                }
+            };
+        return OnClose.InvokeAsync(data);
+    }
+
+}

@@ -10,13 +10,12 @@ namespace Crypcy.ApplicationCore.Contracts
 	public interface IUserInterface
 	{
         event Action<int> OnStartNode;
-        event Action<CancellationToken> OnStopNode;
         event Action<string, int> OnConnectToNodeRequest;
-        event Action<string> OnCreateGroupRequest;
+        event Action<string, HashSet<string>> OnCreateGroupRequest;
         event Action<string, string> OnSendMessageRequest;
-		
-		void ShowMessage(string node, string message);
-        void ShowGroup(string group);
+        event Action<string, string> OnSendGroupMessageRequest;
+
+        void ShowMessage(string node, string message);
         void NodeConnectedNotification(string node);
 		void NodeDiconnectedNotification(string node);
 	}

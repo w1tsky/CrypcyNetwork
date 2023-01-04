@@ -20,11 +20,11 @@ namespace Crypcy.NodeUI
 
             builder.Services.AddMauiBlazorWebView();
 
-         #if DEBUG
+        #if DEBUG
 		    builder.Services.AddBlazorWebViewDeveloperTools();
 		    builder.Logging.AddDebug();
-#endif
-            builder.Services.AddSingleton<NodeEventsService>();
+        #endif
+
             builder.Services.AddSingleton(provider =>
             {
                 NodeUiService _ui = new NodeUiService();

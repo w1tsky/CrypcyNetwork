@@ -1,4 +1,4 @@
-﻿using Crypcy.ApplicationCore.Contracts;
+﻿using Crypcy.ApplicationCore.Contracts.Network;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Crypcy.Communication.Network
 {
-	public sealed class TcpNetwork : ICommunication, IDisposable
+    internal sealed class TcpNetwork : INodeManager, IReciveData, ISendData, IDisposable
 	{
 		private ConcurrentDictionary<string, TcpClient> _nodes = new ();
 		public IReadOnlyCollection<string> ConnectedNodes => _nodes.Keys.ToList().AsReadOnly();
@@ -15,7 +15,7 @@ namespace Crypcy.Communication.Network
 
 		public event Action<string> OnNodeConnected = (_) => { };
 		public event Action<string> OnNodeDisconnected = (_) => { };
-		public event Action<string, string> OnNewMessageRecived = (_, _) => { };
+		public event Action<string, byte[]> OnNewMessageRecived = (_, _) => { };
 
 		public async Task StartAsync(int port, CancellationToken ct = default)
 		{
@@ -43,11 +43,10 @@ namespace Crypcy.Communication.Network
 			OnNodeDisconnected.Invoke(node);
 		}
 
-		public void SendMessage(string node, string message)
+		public void SendMessage(string node, byte[] message)
 		{
-			var data = Encoding.ASCII.GetBytes(message);
-			var size = BitConverter.GetBytes(data.Length);
-			_nodes[node].GetStream().WriteAsync(size.Concat(data).ToArray());
+			var size = BitConverter.GetBytes(message.Length);
+			_nodes[node].GetStream().WriteAsync(size.Concat(message).ToArray());
 		}
 
 		private async Task NewClientHandleAsync(TcpClient client, CancellationToken ct = default)
@@ -73,7 +72,7 @@ namespace Crypcy.Communication.Network
 					var buff4data = new byte[size];
 					closeConnectionIfRecived0bytes(client, await stream.ReadAsync(buff4data, 0, size, ct));
 
-					OnNewMessageRecived.Invoke(index, Encoding.ASCII.GetString(buff4data, 0, size));
+					OnNewMessageRecived.Invoke(index, buff4data);
 				}
 			}
 			finally

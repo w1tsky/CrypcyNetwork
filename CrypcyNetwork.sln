@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.ApplicationCore.Cont
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.ApplicationCore", "src\Crypcy.ApplicationCore\Crypcy.ApplicationCore.csproj", "{EDC35FDE-4FB3-4819-80F6-C2E0D15A1D05}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Communication", "Communication", "{56D0BB5D-39BE-4D7E-BF8C-FAEB8BB8378D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetworkCommunication", "NetworkCommunication", "{56D0BB5D-39BE-4D7E-BF8C-FAEB8BB8378D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Communication.Network", "src\Crypcy.Communication.Network\Crypcy.Communication.Network.csproj", "{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Communication.TcpNetwork", "src\Crypcy.Communication.Network\Crypcy.Communication.TcpNetwork.csproj", "{CD9B9F39-E773-4874-A54D-73FFF3EB1D3E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.NodeUI", "src\Crypcy.NodeUI\Crypcy.NodeUI.csproj", "{E9302D4D-FF3A-4010-96B0-849293C074CD}"
 EndProject

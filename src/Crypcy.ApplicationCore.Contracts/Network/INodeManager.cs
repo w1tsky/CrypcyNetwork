@@ -1,16 +1,14 @@
 ﻿using System.Net;
 
-namespace Crypcy.ApplicationCore.Contracts
+namespace Crypcy.ApplicationCore.Contracts.Network
 {
-	public interface ICommunication
+	public interface INodeManager
 	{
 		IReadOnlyCollection<string> ConnectedNodes { get; }
 		event Action<string> OnNodeConnected;
 		event Action<string> OnNodeDisconnected;
-		event Action<string, string> OnNewMessageRecived;
 
 		Task StartAsync(int port, CancellationToken ct);
-		void SendMessage(string node, string message);
 		void DropNodeConnection(string node);
 		Task ConnectToNode(string ip, int port);
 	}

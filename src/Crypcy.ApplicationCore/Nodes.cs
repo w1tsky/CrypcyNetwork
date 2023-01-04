@@ -1,23 +1,27 @@
 ﻿using Crypcy.ApplicationCore.Contracts;
+using Crypcy.ApplicationCore.Contracts.Network;
+using Crypcy.ApplicationCore.TempMessageSolution;
+using Crypcy.ApplicationCore.TempMessageSolution.MessagesTypes;
 using System.Net;
 
 namespace Crypcy.ApplicationCore
 {
-	public class Nodes
+    public class Nodes
 	{
-		protected HashSet<string> _nodes = new HashSet<string>();
+		protected HashSet<string> _nodes = new();
 
-		private readonly ICommunication _communication;
+		private readonly INodeManager _nodeManager;
 		private readonly IUserInterface _userInterface;
+		private readonly MessageSender _messageSender;
 
-		public Nodes(ICommunication communication, IUserInterface userInterface)
+		public Nodes(INodeManager communication, MessageSender massageSender, IUserInterface userInterface)
 		{
-			_communication = communication;
+			_nodeManager = communication;
 			_userInterface = userInterface;
+			_messageSender = massageSender;
 
-			_communication.OnNodeConnected += NodeConnected;
-			_communication.OnNodeDisconnected += NodeDisconected;
-			_communication.OnNewMessageRecived += MessegeRecived;
+			_nodeManager.OnNodeConnected += NodeConnected;
+			_nodeManager.OnNodeDisconnected += NodeDisconected;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
 			_userInterface.OnConnectToNodeRequest += ConnectToNode;
@@ -25,12 +29,12 @@ namespace Crypcy.ApplicationCore
 
 		protected void ConnectToNode(string ip, int port)
 		{
-			_communication.ConnectToNode(ip, port).Wait();
+			_nodeManager.ConnectToNode(ip, port).Wait();
 		}
 
 		protected void NodeStart(int port)
 		{
-			_communication.StartAsync(port, CancellationToken.None);
+			_nodeManager.StartAsync(port, CancellationToken.None);
 		}
 
 		protected void NodeConnected(string node)
@@ -46,7 +50,7 @@ namespace Crypcy.ApplicationCore
 
 		protected void SendMessage(string node, string message)
 		{
-			_communication.SendMessage(node, message);
+			_messageSender.SendMessage(node, new TextMessage() { Text = message});
 		}
 
 		protected void MessegeRecived(string node, string message)

@@ -1,16 +1,15 @@
 ﻿@page "/chat"
 @using Crypcy.NodeUI.Services
 @using Crypcy.NodeUI.Models
-@using System.Reactive.Linq;
 @inject NodeUiService UiService
 
-<div class="main-container container-fluid bg-dark text-white h-100 mh-70">
-    <div class="row h-100">
-        <div class="chat-container col-md-8 h-100 p-0 d-flex flex-column">
+<div class="main-container container-fluid bg-dark text-white">
+    <div class="row">
+        <div class="chat-container col-md-8 p-0 d-flex flex-column">
             <div class="chat-header p-2 d-flex justify-content-between align-items-center">
                 <h5 class="text-white m-0">Chat</h5>
             </div>
-            <div class="chat-body overflow-auto p-4 bg-secondary flex-grow-1">
+            <div class="chat-body p-4 bg-secondary flex-grow-1">
                 <div class="messages d-flex flex-column">
                     @foreach (var message in messages)
                     {
@@ -27,7 +26,7 @@
         <div class="connected-nodes col-md-4 bg-dark p-0 flex-grow-1">
             <div class="p-4 d-flex flex-column">
                 <h5 class="text-white py-2">Connected Nodes</h5>
-                <ul class="list-group list-group-flush h-100">
+                <ul class="list-group list-group-flush">
                     @foreach (var node in connectedNodes)
                     {
                         <li class="list-group-item p-2 @(node == selectedNode ? "active" : "")" @onclick="() => selectedNode = node">@node</li>

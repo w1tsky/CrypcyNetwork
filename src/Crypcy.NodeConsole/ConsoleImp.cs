@@ -17,13 +17,13 @@ namespace Crypcy.NodeConsole
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
         static ConcurrentDictionary<string, List<string>> _nodeGroups = new ConcurrentDictionary<string, List<string>>();
 
-        
 		public event Action<int>? OnStartNode;
-        public event Action<CancellationToken>? OnStopNode;
-        public event Action<string, string>? OnSendMessageRequest;
+        public event Action? OnStopNode;
         public event Action<string, int>? OnConnectToNodeRequest;
-        public event Action<string>? OnCreateGroupRequest;
-        
+        public event Action<string, string>? OnSendMessageRequest;
+        public event Action<string, HashSet<string>> OnCreateGroupRequest;
+        public event Action<string, string> OnSendGroupMessageRequest;
+
 
         public void NodeConnectedNotification(string node)
 		{
@@ -91,17 +91,20 @@ namespace Crypcy.NodeConsole
 				return;
 			}
 
-			// connect to node
-			var connectToNode = new Regex(@"^connectto (?'ip'.+) (?'port'\d+)$", RegexOptions.IgnoreCase);
-			if (connectToNode.IsMatch(input))
-			{
-				var values = connectToNode.Matches(input)[0].Groups;
-				var ip = values["ip"].Value;
-				var port = int.Parse(values["port"].Value);
-				OnConnectToNodeRequest?.Invoke(ip, port);
-				return;
-			}
-		}
+            // connect to node
+            var connectToNode = new Regex(@"^connect (?'ip'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b):(?'port'\d+)$", RegexOptions.IgnoreCase);
+            if (connectToNode.IsMatch(input))
+            {
+                var values = connectToNode.Matches(input)[0].Groups;
+                var ip = values["ip"].Value;
+                var port = int.Parse(values["port"].Value);
+                OnConnectToNodeRequest?.Invoke(ip, port);
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please use the format 'connect IP:PORT' to specify the IP and port of the node to connect to.");
+            }
+        }
 
 
     }

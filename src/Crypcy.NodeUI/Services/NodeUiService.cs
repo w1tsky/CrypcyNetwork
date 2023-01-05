@@ -12,27 +12,32 @@ namespace Crypcy.NodeUI.Services
     public class NodeUiService : IUserInterface
     {
         private List<string> _nodes = new List<string>();
+        private Dictionary<string, ICollection<string>> _nodeGroups = new Dictionary<string, ICollection<string>>();
 
         public event Action<int> OnStartNode;
-        public event Action<CancellationToken> OnStopNode;
+        public event Action OnStopNode;
+
 
         public event Action<string> OnNodeConnected;
         public event Action<string> OnNodeDisconnected;
 
-        public event Action<string, string> OnMessageReceived;
-
         public event Action<string, int> OnConnectToNodeRequest;
         public event Action<string, string> OnSendMessageRequest;
-        public event Action<string> OnCreateGroupRequest;
+        public event Action<string, HashSet<string>> OnCreateGroupRequest;
+        public event Action<string, string> OnSendGroupMessageRequest;
+
+        public event Action<string, string> OnMessageReceived;
+
+
 
         public void NodeStart(int port)
         {
             OnStartNode?.Invoke(port);
         }
 
-        public void NodeStop(CancellationToken ct = default)
+        public void NodeStop()
         {
-            OnStopNode?.Invoke(ct);
+            OnStopNode?.Invoke();
         }
 
         public void NodeConnect(string ip, int port)
@@ -40,14 +45,9 @@ namespace Crypcy.NodeUI.Services
             OnConnectToNodeRequest?.Invoke(ip, port);
         }
 
-        public void NodeSendMessage(string node, string message)
-        {
-            OnSendMessageRequest?.Invoke(node, message);
-        }
-
         public void NodeConnectedNotification(string node)
         {
-            _nodes.Add(node);   
+            _nodes.Add(node);
             OnNodeConnected?.Invoke(node);
         }
 
@@ -57,19 +57,34 @@ namespace Crypcy.NodeUI.Services
             OnNodeDisconnected?.Invoke(node);
         }
 
+        public void NodeGroupAdd(string nodeGroup, ICollection<string> nodes)
+        {
+            OnCreateGroupRequest?.Invoke(nodeGroup, nodes.ToHashSet());
+            _nodeGroups.Add(nodeGroup, nodes);
+        }
+
+        public void NodeSendMessage(string node, string message)
+        {
+            OnSendMessageRequest?.Invoke(node, message);
+        }
+        public void NodeSendGroupMessage(string nodeGroup, string message)
+        {
+            OnSendGroupMessageRequest?.Invoke(nodeGroup, message);
+        }
+
+
         public void ShowMessage(string node, string message)
         {
             OnMessageReceived?.Invoke(node, message);
         }
+
+
 
         public List<string> GetConnectedNodes()
         {
             return _nodes;
         }
 
-        public void ShowGroup(string group)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

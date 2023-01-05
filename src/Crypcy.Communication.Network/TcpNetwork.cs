@@ -23,7 +23,7 @@ namespace Crypcy.Communication.Network
 			tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			tcpListener.Start(100);
 			while (!ct.IsCancellationRequested)
-                await NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
+				NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
 			tcpListener.Stop();
 		}
 		public async Task ConnectToNode(string ip, int port)

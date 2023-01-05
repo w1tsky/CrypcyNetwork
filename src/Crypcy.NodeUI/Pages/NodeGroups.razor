@@ -1,111 +1,126 @@
 ﻿@page "/groups"
 @using Crypcy.NodeUI.Models;
 @using Crypcy.NodeUI.Services
+@using Crypcy.NodeUI.Components
+@using static Crypcy.NodeUI.Components.GroupModal;
 @inject NodeUiService UiService
 
-<div class="container-fluid h-100">
-    <div class="row h-100">
-        <div class="col-9 p-4">
-            <h4>@SelectedGroup.Name</h4>
-            <hr class="bg-light" />
-            <div class="messages">
-                @foreach (var message in SelectedGroup.Messages)
+<div class="main-container container-fluid bg-dark text-white">
+    <div class="row">
+        <div class="chat-container col-md-8 p-0 d-flex flex-column">
+            <div class="chat-header p-2 d-flex justify-content-between align-items-center">
+                @if (selectedGroup != null)
                 {
-                    <div class="message @(message.Sender == UserName ? "text-right" : "")">
-                        <strong>@message.Sender</strong>: @message.Text
-                    </div>
+                    <h5 class="text-white m-0">Group: @selectedGroup.Name</h5>
                 }
             </div>
-            <form @onsubmit="SendMessage" class="input-group mt-3">
-                <input type="text" class="form-control" placeholder="Enter a message..." @bind="Message">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary">Send</button>
+            <div class="chat-body overflow-auto p-4 bg-secondary flex-grow-1">
+                <div class="messages">
+                    @if (selectedGroup != null)
+                    {
+                        @foreach (var message in selectedGroup.Messages)
+                        {
+                            <div class="message @(message.Sender == nodeName ? "text-right" : "")">
+                                <strong>@message.Sender</strong>: @message.Text
+                            </div>
+                        }
+                    }
                 </div>
-            </form>
+            </div>
+            <div class="chat-footer p-2 d-flex align-items-center">
+                <input type="text" class="form-control w-100" placeholder="Enter message..." @bind-value="message" @bind-value:event="oninput" />
+                <button type="button" class="btn btn-primary" @onclick="() => SendMessage()">Send</button>
+            </div>
         </div>
-        <div class="col-3 bg-secondary p-4">
-            <h4>Chat Groups</h4>
-            <hr class="bg-light" />
-            <ul class="list-unstyled">
-                @foreach (var group in NodeGroup)
-                {
-                    <li @onclick="() => SelectGroup(group)" class="@(group == SelectedGroup ? "text-primary font-weight-bold" : "")">
-                        <i class="fa fa-hashtag mr-2" aria-hidden="true"></i>@group.Name
-                        <div class="dropdown">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Nodes
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <div class="node-groups col-md-4 bg-dark p-0 flex-grow-1">
+            <div class="p-4 d-flex flex-column">
+                <h4 class="m-0">Node Groups</h4>
+                <button type="button" class="btn btn-primary" @onclick="() => DisplayCreateGroup()">Create Group</button>
+                <ul class="list-unstyled">
+                    @foreach (var group in nodeGroups)
+                    {
+                        <li @onclick="() => SelectGroup(group)" class="@(group == selectedGroup ? "text-primary font-weight-bold" : "")">
+                            <i class="fa fa-hashtag mr-2" aria-hidden="true">@group.Name</i>
+                            <ul class="list-group">
                                 @foreach (var node in group.Nodes)
                                 {
-                                    <a class="dropdown-item" href="#">@node</a>
+                                    <li class="list-group-item">@node</li>
                                 }
-                            </div>
-                        </div>
-                    </li>
-                }
-            </ul>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
 </div>
+
+@if (CreateGroupDisplay)
+{
+    <GroupModal ConnectedNodes=connectedNodes  OnClose="@OnCreateGroupClose" ></GroupModal>
+}
+
 
 
 
 @code {
 
-    private string UserName { get; set; } = "User 1";
-    private NodeGroup SelectedGroup { get; set; }
-    private string Message { get; set; }
-    private List<NodeGroup> NodeGroup { get; set; }
+    private string nodeName { get; set; } = "User 1";
+    private string message { get; set; }
+
+    private NodeGroup selectedGroup { get; set; }
+    private List<NodeGroup> nodeGroups { get; set; }
+    private List<string> connectedNodes;
+
+    public bool CreateGroupDisplay { get; set; }
+
+    private void OnCreateGroupClose(CreateGroupData data)
+    {
+        if (data.Accepted)
+        {
+            CreateNodeGroup(data.NodeGroup);
+        }
+        CreateGroupDisplay = false;
+        StateHasChanged();
+    }
+
+    private void DisplayCreateGroup()
+    {
+        CreateGroupDisplay = true;
+        StateHasChanged();
+    }
+
+    void CreateNodeGroup(NodeGroup nodeGroup)
+    {
+        nodeGroups.Add(nodeGroup);
+        UiService.NodeGroupAdd(nodeGroup.Name, nodeGroup.Nodes);
+    }
+
 
     protected override void OnInitialized()
     {
-        NodeGroup = new List<NodeGroup>
-        {
-            new NodeGroup
-            {
-                Name = "Group 1",
-                Nodes = new List<string>
-                {
-                  "Node1",
-                  "Node2"
-                },
-                Messages = new List<Message>
-                {
-                    new Message { Sender = "User 2", Text = "Hello!" },
-                    new Message { Sender = "User 1", Text = "Hi!" }
-                }
-            },
-            new NodeGroup
-            {
-                Name = "Group 2",                
-                Nodes = new List<string>
-                {
-                  "Node4",
-                  "Node5"
-                },
-                Messages = new List<Message>
-                {
-                    new Message { Sender = "User 3", Text = "Hey!" },
-                    new Message { Sender = "User 1", Text = "Hi there!" }
-                }
-            }
-        };
+        connectedNodes = UiService.GetConnectedNodes();
 
-        SelectedGroup = NodeGroup.FirstOrDefault();
+        if (nodeGroups == null)
+            nodeGroups = new List<NodeGroup>();
+        else
+            selectedGroup = nodeGroups.FirstOrDefault();
     }
 
-    private void SelectGroup(NodeGroup group)
+
+    void SelectGroup(NodeGroup group)
     {
-        SelectedGroup = group;
+        selectedGroup = group;
     }
 
-    private void SendMessage()
+    void SendMessage()
     {
-        if (SelectedGroup != null)
+        if (selectedGroup != null)
         {
-            SelectedGroup.Messages.Add(new Message { Sender = UserName, Text = Message });
-            Message = "";
+            selectedGroup.Messages.Add(new Message { Sender = nodeName, Text = message });
+            UiService.NodeSendGroupMessage(selectedGroup.Name, message);
+            message = "";
         }
     }
+
 }

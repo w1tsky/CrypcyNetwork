@@ -11,9 +11,10 @@ namespace Crypcy.NodeConsole
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Short manual:");
-			Console.WriteLine("Type \"start:PORT\" to start node with port(1024 to 49151).");
-			Console.WriteLine("Type \"l\" to show list of nodes.");
-			Console.WriteLine("For sending message you must write message in specific format:");
+			Console.WriteLine("Type \"start:port\" to start node with port(1024 to 49151).");
+			Console.WriteLine("Type \"list\" to show list of nodes.");
+            Console.WriteLine("Type \"connect IP:PORT\" to connect to Node.");
+            Console.WriteLine("For sending message you must write message in specific format:");
 			Console.WriteLine("Template: Nmsg:your message");
 			Console.WriteLine("N is number of target node, (you can get nodes via l command) your message is your message");
 			Console.WriteLine("Server starting...");

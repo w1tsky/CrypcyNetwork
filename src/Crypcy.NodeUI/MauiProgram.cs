@@ -23,14 +23,14 @@ namespace Crypcy.NodeUI
 		    builder.Services.AddBlazorWebViewDeveloperTools();
 		    builder.Logging.AddDebug();
         #endif
-            builder.Services.AddSingleton(provider =>
-            {
-                NodeUiService _ui = new NodeUiService();
-                TcpNetwork _network = new TcpNetwork();
-                Node _nodes = new Node(_network, _ui);
+            //builder.Services.AddSingleton(provider =>
+            //{
+            //    NodeUiService _ui = new NodeUiService();
+            //    TcpNetwork _network = new TcpNetwork();
+            //    Node _nodes = new Node(_network, _ui);
                 
-                return _ui;
-            });
+            //    return _ui;
+            //});
 
             return builder.Build();
         }

@@ -1,9 +1,12 @@
-﻿using Crypcy.ApplicationCore;
+﻿using Autofac;
+using Crypcy.ApplicationCore;
+using Crypcy.ApplicationCore.Contracts;
+using Crypcy.ApplicationCore.MessageProcessing;
 using Crypcy.Communication.Network;
 
 namespace Crypcy.NodeConsole
 {
-	internal class Program
+    internal class Program
 	{
 		static void Main(string[] args)
 		{
@@ -16,16 +19,25 @@ namespace Crypcy.NodeConsole
 			Console.WriteLine("Server starting...");
 
 			// DI:
-			var console = new ConsoleImp();
-			using var network = new TcpNetwork();
-			var node = new Node(network, console);
+			var containerBuilder = new ContainerBuilder();
+			containerBuilder.RegisterModule(new ApplicationCoreModuleDISetup());
+			containerBuilder.RegisterModule(new TcpNetworkModuleDISetup());
+			containerBuilder.RegisterType<ConsoleImp>().As<IUserInterface>().AsSelf().InstancePerLifetimeScope();
+			var container = containerBuilder.Build();
 			// end DI
+
+			using var scope = container.BeginLifetimeScope(b => b.RegisterBuildCallback(c =>
+			{
+				c.Resolve<Nodes>();
+				c.Resolve<MessageHandler>();
+			}));
+			var console = scope.Resolve<ConsoleImp>();
 
 			while (true)
 			{
 				try
 				{
-					console.NewInput(Console.ReadLine());
+					console.NewInput(Console.ReadLine()!);
 				}
 				catch (Exception ex)
 				{

@@ -1,80 +1,67 @@
 ﻿using Crypcy.ApplicationCore.Contracts;
-using System.Net;
+using Crypcy.ApplicationCore.Contracts.Network;
+using Crypcy.ApplicationCore.MessageProcessing;
+using Crypcy.ApplicationCore.MessagesTypes;
 
 namespace Crypcy.ApplicationCore
 {
-	public class Node
+    public class Nodes
 	{
-		protected HashSet<string> _nodes;
-		protected NodeGroup _nodeGroups;
+		protected HashSet<string> _nodes = new();
 
-		private readonly ICommunication _communication;
+		private readonly INodeManager _nodeManager;
 		private readonly IUserInterface _userInterface;
+		private readonly IMessageSender _messageSender;
 
-		public Node(ICommunication communication, IUserInterface userInterface)
+		public Nodes(INodeManager communication, IMessageSender massageSender, IUserInterface userInterface)
 		{
-			_nodes = new HashSet<string>();
-			_nodeGroups = new NodeGroup(_nodes);
-
-            _communication = communication;
+			_nodeManager = communication;
 			_userInterface = userInterface;
+			_messageSender = massageSender;
 
-			_communication.OnNodeConnected += NodeConnected;
-			_communication.OnNodeDisconnected += NodeDisconected;
-			_communication.OnNewMessageRecived += MessegeRecived;
+			_nodeManager.OnNodeConnected += NodeConnected;
+			_nodeManager.OnNodeDisconnected += NodeDisconected;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
-            _userInterface.OnStopNode += NodeStop;
-            _userInterface.OnConnectToNodeRequest += ConnectToNode;
-			_userInterface.OnCreateGroupRequest += CreateGroup;
-
+			_userInterface.OnConnectToNodeRequest += ConnectToNode;
 		}
 
 		protected void ConnectToNode(string ip, int port)
 		{
-			_communication.ConnectToNode(ip, port).Wait();
+			_nodeManager.ConnectToNode(ip, port).Wait();
 		}
 
 		protected void NodeStart(int port)
 		{
-			_communication.StartAsync(port, CancellationToken.None);
+			_nodeManager.StartAsync(port, CancellationToken.None);
 		}
 
-        protected void NodeStop(CancellationToken ct)
-        {
-            _communication.StartAsync(0, ct);
-        }
-
-        protected void NodeConnected(string node)
+		protected void NodeConnected(string node)
 		{
-			lock (_nodes) _nodes.Add(node);
+			lock (_nodes) 
+				_nodes.Add(node);
+
 			_userInterface.NodeConnectedNotification(node);
 		}
 		protected void NodeDisconected(string node)
 		{
-			lock (_nodes) _nodes.Remove(node);
+			lock (_nodes) 
+				_nodes.Remove(node);
+
 			_userInterface.NodeDiconnectedNotification(node);
 		}
 
 		protected void SendMessage(string node, string message)
 		{
-			_communication.SendMessage(node, message);
+			_messageSender.SendMessageAsync(node, new TextMessage()
+			{ 
+				Text = message
+			}).AsTask().Wait();
 		}
 
 		protected void MessegeRecived(string node, string message)
 		{
 			_userInterface.ShowMessage(node, message);
 		}
-
-        protected void CreateGroup(string groupName)
-        {
-			_nodeGroups.AddGroup(groupName);
-        }
-
-        protected void AddNodeToGroup(string groupName, string node)
-        {
-            _nodeGroups.AddNodeToGroup(groupName, node);
-        }
-
-    }
+	}
 }

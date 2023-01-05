@@ -5,22 +5,22 @@ using Crypcy.ApplicationCore.MessagesTypes;
 
 namespace Crypcy.ApplicationCore
 {
-    public class Nodes
+    public class Node
 	{
 		protected HashSet<string> _nodes = new();
 
-		private readonly INodeManager _nodeManager;
+		private readonly IConnectionsManager _connectionsManager;
 		private readonly IUserInterface _userInterface;
 		private readonly IMessageSender _messageSender;
 
-		public Nodes(INodeManager communication, IMessageSender massageSender, IUserInterface userInterface)
+		public Node(IConnectionsManager communication, IMessageSender massageSender, IUserInterface userInterface)
 		{
-			_nodeManager = communication;
+			_connectionsManager = communication;
 			_userInterface = userInterface;
 			_messageSender = massageSender;
 
-			_nodeManager.OnNodeConnected += NodeConnected;
-			_nodeManager.OnNodeDisconnected += NodeDisconected;
+			_connectionsManager.OnNodeConnected += NodeConnected;
+			_connectionsManager.OnNodeDisconnected += NodeDisconected;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
 			_userInterface.OnConnectToNodeRequest += ConnectToNode;
@@ -28,12 +28,12 @@ namespace Crypcy.ApplicationCore
 
 		protected void ConnectToNode(string ip, int port)
 		{
-			_nodeManager.ConnectToNode(ip, port).Wait();
+			_connectionsManager.ConnectToNode(ip, port).Wait();
 		}
 
 		protected void NodeStart(int port)
 		{
-			_nodeManager.StartAsync(port, CancellationToken.None);
+			_connectionsManager.StartAsync(port, CancellationToken.None);
 		}
 
 		protected void NodeConnected(string node)

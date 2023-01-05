@@ -8,7 +8,7 @@ namespace Crypcy.ApplicationCore
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<MessageSender>().As<IMessageSender>().InstancePerLifetimeScope();
-			builder.RegisterType<Nodes>().AsSelf().InstancePerLifetimeScope();
+			builder.RegisterType<Node>().AsSelf().InstancePerLifetimeScope();
 			builder.RegisterType<MessageHandler>().AsSelf();
 		}
 	}

@@ -1,8 +1,7 @@
 ﻿using Crypcy.ApplicationCore;
-using Crypcy.Communication.Network;
 using Crypcy.NodeUI.Services;
 using Microsoft.Extensions.Logging;
-using Windows.Services.Maps;
+using Autofac;
 
 namespace Crypcy.NodeUI
 {
@@ -23,8 +22,7 @@ namespace Crypcy.NodeUI
          #if DEBUG
 		    builder.Services.AddBlazorWebViewDeveloperTools();
 		    builder.Logging.AddDebug();
-#endif
-            builder.Services.AddSingleton<NodeEventsService>();
+        #endif
             builder.Services.AddSingleton(provider =>
             {
                 NodeUiService _ui = new NodeUiService();

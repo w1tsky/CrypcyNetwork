@@ -28,7 +28,7 @@ namespace Crypcy.NodeConsole
 
 			using var scope = container.BeginLifetimeScope(b => b.RegisterBuildCallback(c =>
 			{
-				c.Resolve<Nodes>();
+				c.Resolve<Node>();
 				c.Resolve<MessageHandler>();
 			}));
 			var console = scope.Resolve<ConsoleImp>();

@@ -2,7 +2,7 @@
 
 namespace Crypcy.ApplicationCore.Contracts.Network
 {
-	public interface INodeManager
+	public interface IConnectionsManager
 	{
 		IReadOnlyCollection<string> ConnectedNodes { get; }
 		event Action<string> OnNodeConnected;

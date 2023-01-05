@@ -15,7 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crypcy.ApplicationCore.Contracts\Crypcy.ApplicationCore.Contracts.csproj" />
     <ProjectReference Include="..\Crypcy.ApplicationCore\Crypcy.ApplicationCore.csproj" />
-    <ProjectReference Include="..\Crypcy.Communication.Network\Crypcy.Communication.TcpNetwork.csproj" />
+    <ProjectReference Include="..\Crypcy.Communication.Network\Crypcy.Communication.Network.csproj" />
   </ItemGroup>
 
 </Project>

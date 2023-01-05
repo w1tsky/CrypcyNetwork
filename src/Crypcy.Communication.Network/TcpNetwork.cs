@@ -43,10 +43,10 @@ namespace Crypcy.Communication.Network
 			OnNodeDisconnected.Invoke(node);
 		}
 
-		public void SendMessage(string node, byte[] message)
+		public ValueTask SendMessageAsync(string node, byte[] message)
 		{
 			var size = BitConverter.GetBytes(message.Length);
-			_nodes[node].GetStream().WriteAsync(size.Concat(message).ToArray());
+			return _nodes[node].GetStream().WriteAsync(size.Concat(message).ToArray());
 		}
 
 		private async Task NewClientHandleAsync(TcpClient client, CancellationToken ct = default)

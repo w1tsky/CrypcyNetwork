@@ -8,6 +8,6 @@ namespace Crypcy.ApplicationCore.Contracts.Network
 {
 	public interface ISendData
 	{
-		void SendMessage(string node, byte[] message);
+		ValueTask SendMessageAsync(string node, byte[] message);
 	}
 }

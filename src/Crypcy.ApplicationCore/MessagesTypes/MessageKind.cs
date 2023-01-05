@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crypcy.ApplicationCore.TempMessageSolution
+namespace Crypcy.ApplicationCore.MessagesTypes
 {
     public enum MessageKind
     {

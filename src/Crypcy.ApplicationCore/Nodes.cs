@@ -1,8 +1,7 @@
 ﻿using Crypcy.ApplicationCore.Contracts;
 using Crypcy.ApplicationCore.Contracts.Network;
-using Crypcy.ApplicationCore.TempMessageSolution;
-using Crypcy.ApplicationCore.TempMessageSolution.MessagesTypes;
-using System.Net;
+using Crypcy.ApplicationCore.MessageProcessing;
+using Crypcy.ApplicationCore.MessagesTypes;
 
 namespace Crypcy.ApplicationCore
 {
@@ -12,9 +11,9 @@ namespace Crypcy.ApplicationCore
 
 		private readonly INodeManager _nodeManager;
 		private readonly IUserInterface _userInterface;
-		private readonly MessageSender _messageSender;
+		private readonly IMessageSender _messageSender;
 
-		public Nodes(INodeManager communication, MessageSender massageSender, IUserInterface userInterface)
+		public Nodes(INodeManager communication, IMessageSender massageSender, IUserInterface userInterface)
 		{
 			_nodeManager = communication;
 			_userInterface = userInterface;
@@ -39,24 +38,30 @@ namespace Crypcy.ApplicationCore
 
 		protected void NodeConnected(string node)
 		{
-			lock (_nodes) _nodes.Add(node);
+			lock (_nodes) 
+				_nodes.Add(node);
+
 			_userInterface.NodeConnectedNotification(node);
 		}
 		protected void NodeDisconected(string node)
 		{
-			lock (_nodes) _nodes.Remove(node);
+			lock (_nodes) 
+				_nodes.Remove(node);
+
 			_userInterface.NodeDiconnectedNotification(node);
 		}
 
 		protected void SendMessage(string node, string message)
 		{
-			_messageSender.SendMessage(node, new TextMessage() { Text = message});
+			_messageSender.SendMessageAsync(node, new TextMessage()
+			{ 
+				Text = message
+			}).AsTask().Wait();
 		}
 
 		protected void MessegeRecived(string node, string message)
 		{
 			_userInterface.ShowMessage(node, message);
 		}
-
 	}
 }

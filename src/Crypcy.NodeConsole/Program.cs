@@ -1,11 +1,8 @@
 ﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Crypcy.ApplicationCore;
 using Crypcy.ApplicationCore.Contracts;
-using Crypcy.ApplicationCore.TempMessageSolution.MessageHandles;
+using Crypcy.ApplicationCore.MessageProcessing;
 using Crypcy.Communication.Network;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection.Metadata;
 
 namespace Crypcy.NodeConsole
 {
@@ -32,7 +29,7 @@ namespace Crypcy.NodeConsole
 			using var scope = container.BeginLifetimeScope(b => b.RegisterBuildCallback(c =>
 			{
 				c.Resolve<Nodes>();
-				c.Resolve<FrontDataHandler>();
+				c.Resolve<MessageHandler>();
 			}));
 			var console = scope.Resolve<ConsoleImp>();
 
@@ -40,7 +37,7 @@ namespace Crypcy.NodeConsole
 			{
 				try
 				{
-					console.NewInput(Console.ReadLine());
+					console.NewInput(Console.ReadLine()!);
 				}
 				catch (Exception ex)
 				{

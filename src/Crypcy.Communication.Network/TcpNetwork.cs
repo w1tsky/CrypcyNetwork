@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Crypcy.Communication.Network
 {
-    internal sealed class TcpNetwork : IConnectionsManager, IReciveData, ISendData, IDisposable
+    public sealed class TcpNetwork : IConnectionsManager, IReciveData, ISendData, IDisposable
 	{
 		private ConcurrentDictionary<string, TcpClient> _nodes = new ();
 		private IPEndPoint? _endPoint;

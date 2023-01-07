@@ -1,9 +1,8 @@
 ﻿using Crypcy.ApplicationCore;
 using Crypcy.NodeUI.Services;
 using Microsoft.Extensions.Logging;
-using Autofac;
-using Crypcy.ApplicationCore.Contracts;
 using Crypcy.Communication.Network;
+using Crypcy.ApplicationCore.MessageProcessing;
 
 namespace Crypcy.NodeUI
 {
@@ -21,18 +20,34 @@ namespace Crypcy.NodeUI
 
             builder.Services.AddMauiBlazorWebView();
 
-         #if DEBUG
-		    builder.Services.AddBlazorWebViewDeveloperTools();
-		    builder.Logging.AddDebug();
+#if DEBUG
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
 #endif
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new ApplicationCoreModuleDISetup());
-            containerBuilder.RegisterModule(new TcpNetworkModuleDISetup());
-            containerBuilder.RegisterType<NodeUiService>().As<IUserInterface>().AsSelf().InstancePerLifetimeScope();
-            var container = containerBuilder.Build();
+
+            builder.Services.AddSingleton(provider =>
+            {
+                NodeUiService _ui = new NodeUiService();
+                TcpNetwork _network = new TcpNetwork();
+                MessageSender _messageSender = new MessageSender(_network);
+
+                Node _nodes = new Node(_network, _messageSender, _ui);
+
+                return _ui;
+            });
+
 
             return builder.Build();
         }
+
+      
     }
 }
+
+
+
+
+
+
+

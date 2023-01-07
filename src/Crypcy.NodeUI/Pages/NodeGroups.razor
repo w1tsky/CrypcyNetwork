@@ -94,6 +94,7 @@
     {
         nodeGroups.Add(nodeGroup);
         UiService.NodeGroupAdd(nodeGroup.Name, nodeGroup.Nodes);
+        StateHasChanged();
     }
 
 
@@ -111,6 +112,7 @@
     void SelectGroup(NodeGroup group)
     {
         selectedGroup = group;
+        StateHasChanged();
     }
 
     void SendMessage()
@@ -120,6 +122,7 @@
             selectedGroup.Messages.Add(new Message { Sender = nodeName, Text = message });
             UiService.NodeSendGroupMessage(selectedGroup.Name, message);
             message = "";
+            StateHasChanged();
         }
     }
 

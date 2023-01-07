@@ -12,7 +12,7 @@ namespace Crypcy.Communication.Network
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<TcpNetwork>().AsImplementedInterfaces().InstancePerLifetimeScope();
+			builder.RegisterType<TcpNetwork>().AsImplementedInterfaces().SingleInstance();
 		}
 	}
 }

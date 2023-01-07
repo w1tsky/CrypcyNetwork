@@ -13,9 +13,15 @@ namespace Crypcy.ApplicationCore
 		private readonly IUserInterface _userInterface;
 		private readonly IMessageSender _messageSender;
 
-		public Node(IConnectionsManager communication, IMessageSender massageSender, IUserInterface userInterface)
+        private CancellationToken _token;
+        private CancellationTokenSource _cts;
+
+        public Node(IConnectionsManager connections, IMessageSender massageSender, IUserInterface userInterface)
 		{
-			_connectionsManager = communication;
+            _cts = new();
+            _token = _cts.Token;
+
+            _connectionsManager = connections;
 			_userInterface = userInterface;
 			_messageSender = massageSender;
 
@@ -23,20 +29,26 @@ namespace Crypcy.ApplicationCore
 			_connectionsManager.OnNodeDisconnected += NodeDisconected;
 			_userInterface.OnSendMessageRequest += SendMessage;
 			_userInterface.OnStartNode += NodeStart;
-			_userInterface.OnConnectToNodeRequest += ConnectToNode;
+            _userInterface.OnStopNode += NodeStop;
+            _userInterface.OnConnectToNodeRequest += ConnectToNode;
 		}
 
-		protected void ConnectToNode(string ip, int port)
-		{
-			_connectionsManager.ConnectToNode(ip, port).Wait();
-		}
+        protected void NodeStart(int port)
+        {
+            _connectionsManager.StartAsync(port, _token);
+        }
 
-		protected void NodeStart(int port)
-		{
-			_connectionsManager.StartAsync(port, CancellationToken.None);
-		}
+        protected void NodeStop()
+        {
+            _cts.Cancel();
+        }
 
-		protected void NodeConnected(string node)
+        protected void ConnectToNode(string ip, int port)
+        {
+            _connectionsManager.ConnectToNode(ip, port).Wait();
+        }
+
+        protected void NodeConnected(string node)
 		{
 			lock (_nodes) 
 				_nodes.Add(node);

@@ -24,6 +24,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82FE8920-F699-41A4-BEFF-B7973DFCCB3C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-legacy", "src-legacy", "{47EC3698-1AA0-4F98-AFB8-CF640C9967E5}"
+	ProjectSection(SolutionItems) = preProject
+		src\Crypcy.NodeUI\MauiProgram.cs = src\Crypcy.NodeUI\MauiProgram.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

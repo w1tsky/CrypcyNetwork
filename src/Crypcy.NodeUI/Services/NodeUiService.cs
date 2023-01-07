@@ -17,18 +17,14 @@ namespace Crypcy.NodeUI.Services
         public event Action<int> OnStartNode;
         public event Action OnStopNode;
 
-
-        public event Action<string> OnNodeConnected;
-        public event Action<string> OnNodeDisconnected;
-
         public event Action<string, int> OnConnectToNodeRequest;
         public event Action<string, string> OnSendMessageRequest;
         public event Action<string, HashSet<string>> OnCreateGroupRequest;
         public event Action<string, string> OnSendGroupMessageRequest;
-
         public event Action<string, string> OnMessageReceived;
 
-
+        public event Action<string> OnNodeConnected;
+        public event Action<string> OnNodeDisconnected;
 
         public void NodeStart(int port)
         {

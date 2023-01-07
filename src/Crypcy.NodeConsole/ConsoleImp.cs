@@ -1,13 +1,7 @@
 ﻿using Crypcy.ApplicationCore.Contracts;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 
 namespace Crypcy.NodeConsole
 {
@@ -17,8 +11,8 @@ namespace Crypcy.NodeConsole
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
         static ConcurrentDictionary<string, List<string>> _nodeGroups = new ConcurrentDictionary<string, List<string>>();
 
-		public event Action<int>? OnStartNode;
-        public event Action? OnStopNode;
+        public event Action<int> OnStartNode;
+        public event Action OnStopNode;
         public event Action<string, int>? OnConnectToNodeRequest;
         public event Action<string, string>? OnSendMessageRequest;
         public event Action<string, HashSet<string>> OnCreateGroupRequest;
@@ -83,8 +77,17 @@ namespace Crypcy.NodeConsole
 				return;
 			}
 
-			// show connected list
-			var showConnectedNodes = new Regex(@"^list$", RegexOptions.IgnoreCase);
+            // stop node 
+            var regStop = new Regex(@"^stop$", RegexOptions.IgnoreCase);
+            if (regStop.IsMatch(input))
+            {
+                OnStopNode?.Invoke();
+                Console.WriteLine("Node stopping...");
+                return;
+            }
+
+            // show connected list
+            var showConnectedNodes = new Regex(@"^list$", RegexOptions.IgnoreCase);
 			if (showConnectedNodes.IsMatch(input))
 			{
 				ShowConnectedNodes();
@@ -97,7 +100,15 @@ namespace Crypcy.NodeConsole
             {
                 var values = connectToNode.Matches(input)[0].Groups;
                 var ip = values["ip"].Value;
-                var port = int.Parse(values["port"].Value);
+                if (int.TryParse(values["port"].Value, out var port))
+                {
+                    OnConnectToNodeRequest?.Invoke(ip.ToString(), port);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid port. Please specify a valid port number.");
+                }
                 OnConnectToNodeRequest?.Invoke(ip, port);
             }
             else

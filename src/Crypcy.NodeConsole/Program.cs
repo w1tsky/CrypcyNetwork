@@ -48,7 +48,7 @@ namespace Crypcy.NodeConsole
 
             while (!cts.Token.IsCancellationRequested)
             {
-                bool isService = configuration.GetValue<bool>("Node:RunAsService");
+                bool isService = Convert.ToBoolean(configuration.GetValue<bool>("Node:RunAsService"));
 
                 if (!isService)
                 {

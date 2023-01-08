@@ -94,27 +94,28 @@ namespace Crypcy.NodeConsole
 				return;
 			}
 
-            // connect to node
-            var connectToNode = new Regex(@"^connect (?'ip'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b):(?'port'\d+)$", RegexOptions.IgnoreCase);
+            // connect to node 
+            var connectToNode = new Regex(@"^connect (?'hostnameOrIp'([a-zA-Z0-9-\.]+)|(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)):(?'port'\d+)$", RegexOptions.IgnoreCase);
             if (connectToNode.IsMatch(input))
             {
                 var values = connectToNode.Matches(input)[0].Groups;
-                var ip = values["ip"].Value;
+                var hostnameOrIp = values["hostnameOrIp"].Value;
                 if (int.TryParse(values["port"].Value, out var port))
                 {
-                    OnConnectToNodeRequest?.Invoke(ip.ToString(), port);
+                    OnConnectToNodeRequest?.Invoke(hostnameOrIp, port);
                     return;
                 }
                 else
                 {
                     Console.WriteLine("Invalid port. Please specify a valid port number.");
                 }
-                OnConnectToNodeRequest?.Invoke(ip, port);
+                OnConnectToNodeRequest?.Invoke(hostnameOrIp, port);
             }
             else
             {
-                Console.WriteLine("Invalid input. Please use the format 'connect IP:PORT' to specify the IP and port of the node to connect to.");
+                Console.WriteLine("Invalid input. Please use the format 'connect HOSTNAME_OR_IP:PORT' to specify the hostname or IP and port of the node to connect to.");
             }
+
         }
 
 

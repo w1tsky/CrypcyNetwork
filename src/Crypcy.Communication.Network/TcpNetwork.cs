@@ -26,12 +26,21 @@ namespace Crypcy.Communication.Network
 				NewClientHandleAsync(await tcpListener.AcceptTcpClientAsync(ct), ct);
 			tcpListener.Stop();
 		}
-		public async Task ConnectToNode(string ip, int port)
+		public async Task ConnectToNode(string address, int port)
 		{
-			var client = new TcpClient();
+            IPAddress ipAddress;
+            var client = new TcpClient();
 			client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			client.Client.Bind(_endPoint);
-			await client.ConnectAsync(IPAddress.Parse(ip), port);
+
+
+            if (!IPAddress.TryParse(address, out ipAddress))
+            {
+                ipAddress = Dns.GetHostEntry(address).AddressList[0];
+            }
+
+
+            await client.ConnectAsync(ipAddress, port);
 
             await NewClientHandleAsync(client);
 		}

@@ -44,14 +44,14 @@ namespace Crypcy.NodeConsole
             }));
             var console = scope.Resolve<ConsoleImp>();
 
-            Console.WriteLine("Type help for list commands");
-
             CancellationTokenSource cts = new CancellationTokenSource();
             // Start a thread to read input from the console
 
             while (!cts.Token.IsCancellationRequested)
             {
-                if(!configuration.GetValue<bool>("Node:RunAsService")){
+                if (!configuration.GetValue<bool>("Node:RunAsService"))
+                {
+                    Console.WriteLine("Type help for list commands");
                     try
                     {
                         console.NewInput(Console.ReadLine()!, cts);

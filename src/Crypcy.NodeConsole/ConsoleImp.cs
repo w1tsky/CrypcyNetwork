@@ -25,7 +25,7 @@ namespace Crypcy.NodeConsole
         public ConsoleImp(IConfigurationRoot configurationRoot)
         {
             _configuration = configurationRoot;
-            _port = _configuration.GetValue<int>("port");
+            _port = _configuration.GetValue<int>("Node:Port");
             if(_port != 0)
             {
                 OnStartNode?.Invoke(_port);

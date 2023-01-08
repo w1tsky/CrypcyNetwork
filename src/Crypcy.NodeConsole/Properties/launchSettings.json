@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Crypcy.NodeConsole": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "NODE__PORT": "0"
+      }
+    }
+  }
+}

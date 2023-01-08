@@ -1,4 +1,5 @@
 ﻿using Crypcy.ApplicationCore.Contracts;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
@@ -17,6 +18,20 @@ namespace Crypcy.NodeConsole
         public event Action<string, string>? OnSendMessageRequest;
         public event Action<string, HashSet<string>> OnCreateGroupRequest;
         public event Action<string, string> OnSendGroupMessageRequest;
+
+        private readonly IConfigurationRoot _configuration;
+        private int _port { get; set; }
+
+        public ConsoleImp(IConfigurationRoot configurationRoot)
+        {
+            _configuration = configurationRoot;
+            _port = _configuration.GetValue<int>("port");
+            if(_port != 0)
+            {
+                OnStartNode?.Invoke(_port);
+                Console.WriteLine($"Node started on port: {_port}");
+            }
+        }
 
 
         public void NodeConnectedNotification(string node)
@@ -48,7 +63,9 @@ namespace Crypcy.NodeConsole
 
         public void ShowGroup(string group)
         {
-            throw new NotImplementedException();
+            foreach (var n in _nodeGroups[group])
+                Console.WriteLine($"Node:{n};");
+            return ;
         }
 
         protected KeyValuePair<string, string> GetNodePairIndexByNode(string node)
@@ -56,10 +73,33 @@ namespace Crypcy.NodeConsole
 			return _nodes.Single(n => n.Value == node);
 		}
 
-		internal void NewInput(string input)
+		internal void NewInput(string input, CancellationTokenSource cts)
 		{
-			// send message:
-			var sendMessage = new Regex(@"^(\d+)msg:(.+)$", RegexOptions.IgnoreCase);
+            // help
+            var helpReg = new Regex(@"^help$", RegexOptions.IgnoreCase);
+            if (helpReg.IsMatch(input))
+            {
+                Console.WriteLine("Type \"start:port\" to start node with port.");
+                Console.WriteLine("Type \"list\" to show list of nodes.");
+                Console.WriteLine("Type \"connect HOSTNAME_OR_IP:PORT\" to connect to node.");
+                Console.WriteLine("Type \"exit\" to exit app.");
+                Console.WriteLine("For sending message you must write message in specific format:");
+                Console.WriteLine("Template: Nmsg:your message");
+                Console.WriteLine("N is number of target node");
+                return;
+            }
+
+            // exit app
+            var regExit = new Regex(@"^exit$", RegexOptions.IgnoreCase);
+            if (regExit.IsMatch(input))
+            {
+                Console.WriteLine("exiting...");
+                cts.Cancel();
+                return;
+            }
+
+            // send message:
+            var sendMessage = new Regex(@"^(\d+)msg:(.+)$", RegexOptions.IgnoreCase);
 			if (sendMessage.IsMatch(input))
 			{
 				var values = sendMessage.Matches(input)[0].Groups;

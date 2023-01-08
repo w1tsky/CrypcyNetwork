@@ -3,48 +3,74 @@ using Crypcy.ApplicationCore;
 using Crypcy.ApplicationCore.Contracts;
 using Crypcy.ApplicationCore.MessageProcessing;
 using Crypcy.Communication.Network;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace Crypcy.NodeConsole
 {
     internal class Program
-	{
-		static void Main(string[] args)
-		{
-			Console.WriteLine("Short manual:");
-			Console.WriteLine("Type \"start:port\" to start node with port(1024 to 49151).");
-			Console.WriteLine("Type \"list\" to show list of nodes.");
-            Console.WriteLine("Type \"connect HOSTNAME_OR_IP:PORT\" to connect to Node.");
-            Console.WriteLine("For sending message you must write message in specific format:");
-			Console.WriteLine("Template: Nmsg:your message");
-			Console.WriteLine("N is number of target node, (you can get nodes via l command) your message is your message");
-			Console.WriteLine("Server starting...");
+    {
+        static void Main(string[] args)
+        {
 
-			// DI:
-			var containerBuilder = new ContainerBuilder();
-			containerBuilder.RegisterModule(new ApplicationCoreModuleDISetup());
-			containerBuilder.RegisterModule(new TcpNetworkModuleDISetup());
-			containerBuilder.RegisterType<ConsoleImp>().As<IUserInterface>().AsSelf().InstancePerLifetimeScope();
-			var container = containerBuilder.Build();
-			// end DI
+            IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
 
-			using var scope = container.BeginLifetimeScope(b => b.RegisterBuildCallback(c =>
-			{
-				c.Resolve<Node>();
-				c.Resolve<MessageHandler>();
-			}));
-			var console = scope.Resolve<ConsoleImp>();
+            builder.Sources.Clear();
+            builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            builder.AddEnvironmentVariables();
+            if (args.Length > 0)
+            {
+                builder.AddCommandLine(args);
+            }
+            IConfigurationRoot configuration = builder.Build();
 
-			while (true)
-			{
-				try
-				{
-					console.NewInput(Console.ReadLine()!);
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine($"Oops: {ex.Message}");
-				}
-			}
-		}
-	}
+            configuration.GetReloadToken().RegisterChangeCallback(state =>
+            {
+                Console.WriteLine("Restarting console application due to configuration change...");
+                Environment.Exit(0);
+            }, null);
+
+
+            // DI:
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule(new ApplicationCoreModuleDISetup());
+            containerBuilder.RegisterModule(new TcpNetworkModuleDISetup());
+            containerBuilder.RegisterType<ConsoleImp>().As<IUserInterface>().AsSelf().InstancePerLifetimeScope();
+            containerBuilder.RegisterInstance(configuration).As<IConfigurationRoot>().SingleInstance();
+            var container = containerBuilder.Build();
+            // end DI
+
+            using var scope = container.BeginLifetimeScope(b => b.RegisterBuildCallback(c =>
+            {
+                c.Resolve<Node>();
+                c.Resolve<MessageHandler>();
+            }));
+            var console = scope.Resolve<ConsoleImp>();
+
+            Console.WriteLine("Type help for list commands");
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            // Start a thread to read input from the console
+
+            while (!cts.Token.IsCancellationRequested)
+            {
+                string input = Console.ReadLine();
+
+                try
+                {
+                    console.NewInput(input!, cts);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Oops: {ex.Message}");
+                }
+
+            }
+
+
+        }
+
+
+    }
 }

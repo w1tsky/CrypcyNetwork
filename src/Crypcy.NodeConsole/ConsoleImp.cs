@@ -12,12 +12,12 @@ namespace Crypcy.NodeConsole
 		static ConcurrentDictionary<string, string> _nodes = new ConcurrentDictionary<string, string>();
         static ConcurrentDictionary<string, List<string>> _nodeGroups = new ConcurrentDictionary<string, List<string>>();
 
-        public event Action<int> OnStartNode;
-        public event Action OnStopNode;
+        public event Action<int>? OnStartNode;
+        public event Action? OnStopNode;
         public event Action<string, int>? OnConnectToNodeRequest;
         public event Action<string, string>? OnSendMessageRequest;
-        public event Action<string, HashSet<string>> OnCreateGroupRequest;
-        public event Action<string, string> OnSendGroupMessageRequest;
+        public event Action<string, HashSet<string>>? OnCreateGroupRequest;
+        public event Action<string, string>? OnSendGroupMessageRequest;
 
         private readonly IConfigurationRoot _configuration;
         private int _port { get; set; }
@@ -39,13 +39,13 @@ namespace Crypcy.NodeConsole
 			var index = (++_indexCounter).ToString();
 			_nodes[index] = node;
 
-			Console.WriteLine($"New client connected: NodeIndex:{index}; Node:{node};");
+			Console.WriteLine($"Node connected: NodeIndex:{index}; Node:{node};");
 		}
 
 		public void NodeDiconnectedNotification(string node)
 		{
 			var n = GetNodePairIndexByNode(node);
-			Console.WriteLine($"Client disconected: NodeIndex:{n.Key}; Node:{n.Value};");
+			Console.WriteLine($"Node disconected: NodeIndex:{n.Key}; Node:{n.Value};");
 			_nodes.Remove(n.Key, out var _);
 		}
 

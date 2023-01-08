@@ -16,6 +16,8 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 ENV Node__Port=23550
+ENV Node_RunAsService = true
+
 EXPOSE 23550
 
 ENTRYPOINT ["dotnet", "Crypcy.NodeConsole.dll"]

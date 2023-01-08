@@ -19,10 +19,6 @@ namespace Crypcy.NodeConsole
             builder.Sources.Clear();
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             builder.AddEnvironmentVariables();
-            if (args.Length > 0)
-            {
-                builder.AddCommandLine(args);
-            }
             IConfigurationRoot configuration = builder.Build();
 
             configuration.GetReloadToken().RegisterChangeCallback(state =>
@@ -55,20 +51,17 @@ namespace Crypcy.NodeConsole
 
             while (!cts.Token.IsCancellationRequested)
             {
-                string input = Console.ReadLine();
-
-                try
-                {
-                    console.NewInput(input!, cts);
+                if(!configuration.GetValue<bool>("Node:RunAsService")){
+                    try
+                    {
+                        console.NewInput(Console.ReadLine()!, cts);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Oops: {ex.Message}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Oops: {ex.Message}");
-                }
-
             }
-
-
         }
 
 

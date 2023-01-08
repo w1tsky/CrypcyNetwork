@@ -11,6 +11,11 @@ RUN dotnet publish "./src/Crypcy.NodeConsole/Crypcy.NodeConsole.csproj" -c Relea
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
 WORKDIR /app
 COPY --from=build /app/publish .
+
+ENV Node__Port=23550
+EXPOSE 23550
+
 ENTRYPOINT ["dotnet", "Crypcy.NodeConsole.dll"]

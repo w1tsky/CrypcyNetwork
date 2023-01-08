@@ -32,18 +32,16 @@ namespace Crypcy.Communication.Network
             var client = new TcpClient();
 			client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			client.Client.Bind(_endPoint);
-
-
             if (!IPAddress.TryParse(address, out ipAddress))
             {
                 ipAddress = Dns.GetHostEntry(address).AddressList[0];
             }
 
-
             await client.ConnectAsync(ipAddress, port);
 
             await NewClientHandleAsync(client);
 		}
+
 		public void DropNodeConnection(string node)
 		{
 			_nodes[node].Close();

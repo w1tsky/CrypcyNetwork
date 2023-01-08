@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.Communication.Networ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypcy.NodeUI", "src\Crypcy.NodeUI\Crypcy.NodeUI.csproj", "{E9302D4D-FF3A-4010-96B0-849293C074CD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82FE8920-F699-41A4-BEFF-B7973DFCCB3C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-legacy", "src-legacy", "{47EC3698-1AA0-4F98-AFB8-CF640C9967E5}"
 	ProjectSection(SolutionItems) = preProject
 		src\Crypcy.NodeUI\MauiProgram.cs = src\Crypcy.NodeUI\MauiProgram.cs

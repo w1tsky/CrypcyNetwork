@@ -23,7 +23,7 @@ namespace Crypcy.NodeConsole
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterModule(new ApplicationCoreModuleDISetup());
 			containerBuilder.RegisterModule(new TcpNetworkModuleDISetup());
-			containerBuilder.RegisterType<ConsoleImp>().As<IUserInterface>().AsSelf().SingleInstance();
+			containerBuilder.RegisterType<ConsoleImp>().As<IUserInterface>().AsSelf().InstancePerLifetimeScope();
 			var container = containerBuilder.Build();
 			// end DI
 

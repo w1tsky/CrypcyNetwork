@@ -18,7 +18,7 @@ namespace Crypcy.Communication.Network
 
 		public async Task StartAsync(int port = 0, CancellationToken ct = default)
 		{
-			_endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+			_endPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), port);
 			var tcpListener = new TcpListener(_endPoint);
 			tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			tcpListener.Start(100);

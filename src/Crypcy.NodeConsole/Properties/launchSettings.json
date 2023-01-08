@@ -1,11 +1,7 @@
 {
   "profiles": {
     "Crypcy.NodeConsole": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "NODE__PORT": "0",
-        "NODE__RunAsService": "false"
-      }
+      "commandName": "Project"
     }
   }
 }

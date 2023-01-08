@@ -16,7 +16,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 ENV Node__Port=23550
-ENV Node__RunAsService = true
+ENV Node__RunAsService=true
 
 EXPOSE 23550
 

@@ -97,10 +97,16 @@ namespace Crypcy.NodeConsole
 			if (regStart.IsMatch(input))
 			{
 				var strtValues = regStart.Matches(input)[0].Groups;
-				OnStartNode?.Invoke(Int32.Parse(strtValues[1].Value));
-				Console.WriteLine("Node working...");
-				return;
-			}
+                int port = int.Parse(strtValues[1].Value);
+                if (port < 0 || port > 65535)
+                {
+                    Console.WriteLine("Invalid port number, valid range is 0 to 65535");
+                    return;
+                }
+                OnStartNode?.Invoke(port);
+                Console.WriteLine($"Node started on port {port} ...");
+                return;
+            }
 
             // stop node 
             var regStop = new Regex(@"^stop$", RegexOptions.IgnoreCase);

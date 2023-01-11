@@ -11,7 +11,7 @@ namespace Crypcy.NodeConsole
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
             IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
@@ -66,7 +66,10 @@ namespace Crypcy.NodeConsole
             else
             {
                 console.NewInput($"start:{configuration.GetValue<int>("Node:Port")}", cts);
-                Console.ReadLine();
+                while (true)
+                {
+                    await Task.Delay(1000);
+                }
             }
         }
 

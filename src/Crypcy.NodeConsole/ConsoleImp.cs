@@ -19,21 +19,6 @@ namespace Crypcy.NodeConsole
         public event Action<string, HashSet<string>>? OnCreateGroupRequest;
         public event Action<string, string>? OnSendGroupMessageRequest;
 
-        private readonly IConfigurationRoot _configuration;
-        private int _port { get; set; }
-
-        public ConsoleImp(IConfigurationRoot configurationRoot)
-        {
-            _configuration = configurationRoot;
-            _port = _configuration.GetValue<int>("Node:Port");
-            if(_port != 0)
-            {
-                OnStartNode?.Invoke(_port);
-                Console.WriteLine($"Node started on port: {_port}");
-            }
-        }
-
-
         public void NodeConnectedNotification(string node)
 		{
 			var index = (++_indexCounter).ToString();

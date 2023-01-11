@@ -46,9 +46,10 @@ namespace Crypcy.NodeConsole
 
             CancellationTokenSource cts = new CancellationTokenSource();
 
-            while (!cts.Token.IsCancellationRequested)
+
+            if (!configuration.GetValue<bool>("Node:RunAsService"))
             {
-                if (!configuration.GetValue<bool>("Node:RunAsService"))
+                while (!cts.Token.IsCancellationRequested)
                 {
                     Console.WriteLine("Type help for list commands");
 
@@ -62,7 +63,13 @@ namespace Crypcy.NodeConsole
                     }
                 }
             }
+            else
+            {
+                console.NewInput($"start:{configuration.GetValue<int>("Node:Port")}", cts);
+                Console.ReadLine();
+            }
         }
+
 
 
     }
